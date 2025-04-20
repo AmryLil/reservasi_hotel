@@ -9,43 +9,43 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
-class ProductController extends Controller
+class RoomController extends Controller
 {
     public function index(Request $request)
     {
         // Debug untuk melihat request parameter
 
-        $products = Product::paginate(15);
+        $room = Product::paginate(15);
 
         if ($request->has('page')) {
-            return view('list_product', compact('products'));
+            return view('list_product', compact('room'));
         }
 
-        $productsLaris = Product::skip(10)->take(10)->get();
-        return view('pages.users.toko', compact('products', 'productsLaris'));
+        $roomLaris = Product::skip(10)->take(10)->get();
+        return view('pages.users.toko', compact('room', 'roomLaris'));
     }
 
     public function paginate(Request $request)
     {
-        $size     = $request->query('size', 12);  // Default 15 produk per halaman
-        $products = Product::paginate($size);
+        $size = $request->query('size', 12);  // Default 15 produk per halaman
+        $room = Product::paginate($size);
 
-        return view('list_product', compact('products'));
+        return view('list_product', compact('room'));
     }
 
     public function Best4Product(Request $request)
     {
-        $products = Product::limit(4)->get();
-        return view('pages.users.home', compact('products'));
+        $room = Product::limit(4)->get();
+        return view('pages.users.home', compact('room'));
     }
 
     public function showProduct()
     {
-        $products = Product::with('category')->get();
+        $room = Product::with('category')->get();
 
         return view('dashboard.produk.product', [
-            'title'    => 'Daftar Produk',
-            'products' => $products
+            'title' => 'Daftar Produk',
+            'room'  => $room
         ]);
     }
 
@@ -84,7 +84,7 @@ class ProductController extends Controller
             'path_img'    => $imagePath ?? null,  // Menyimpan path gambar
         ]);
 
-        return redirect()->route('dashboard.products');
+        return redirect()->route('dashboard.room');
     }
 
     public function edit($id)
@@ -121,13 +121,13 @@ class ProductController extends Controller
         } catch (\Exception $e) {
         }
 
-        return redirect()->route('dashboard.products')->with('success', 'Produk berhasil diperbarui.');
+        return redirect()->route('dashboard.room')->with('success', 'Produk berhasil diperbarui.');
     }
 
     public function destroy($id)
     {
         $product = Product::findOrFail($id);
         $product->delete();
-        return redirect()->route('dashboard.products')->with('success', 'Product deleted successfully.');
+        return redirect()->route('dashboard.room')->with('success', 'Product deleted successfully.');
     }
 }
