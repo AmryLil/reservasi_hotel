@@ -24,6 +24,15 @@ class User extends Authenticatable
      */
     protected $primaryKey = 'user_id_222320';
 
+    public $incrementing = false;
+
+    /**
+     * The data type of the auto-incrementing ID.
+     *
+     * @var string
+     */
+    protected $keyType = 'string';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -38,6 +47,26 @@ class User extends Authenticatable
         'password_222320',
         'role_222320',
     ];
+
+    public function getAuthPassword()
+    {
+        return $this->password_222320;
+    }
+
+    public function getAuthIdentifierName()
+    {
+        return 'user_id_222320';
+    }
+
+    /**
+     * Get the unique identifier for the user.
+     *
+     * @return mixed
+     */
+    public function getAuthIdentifier()
+    {
+        return $this->{$this->getAuthIdentifierName()};
+    }
 
     /**
      * The attributes that should be hidden for serialization.

@@ -11,7 +11,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('gallery_222320', function (Blueprint $table) {
-            $table->id('id_gallery_222320');
+            $table->string('id_gallery_222320')->primary();
             $table->string('judul_222320', 100);
             $table->text('deskripsi_222320')->nullable();
             $table->string('path_gambar_222320', 255);

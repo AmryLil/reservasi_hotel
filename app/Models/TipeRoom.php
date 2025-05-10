@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\IdGenerator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -24,17 +25,40 @@ class TipeRoom extends Model
      */
     protected $primaryKey = 'tipe_id_222320';
 
+    public $incrementing = false;
+
+    /**
+     * The data type of the auto-incrementing ID.
+     *
+     * @var string
+     */
+    protected $keyType = 'string';
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
     protected $fillable = [
+        'tipe_id_222320',
         'nama_tipe_222320',
         'deskripsi_222320',
         'harga_222320',
         'fasilitas_222320',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Event "creating" berjalan sebelum model disimpan ke database
+        static::creating(function ($tiperoom) {
+            // Generate ID hanya jika belum diisi
+            if (empty($tiperoom->tipe_id_222320)) {
+                $tiperoom->tipe_id_222320 = IdGenerator::roomId();
+            }
+        });
+    }
 
     /**
      * Get the rooms for the room type.

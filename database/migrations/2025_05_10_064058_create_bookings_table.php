@@ -11,9 +11,12 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('booking_222320', function (Blueprint $table) {
-            $table->id('id_booking_222320');
-            $table->foreignId('id_user_222320')->nullable()->constrained('users_222320', 'user_id_222320')->onDelete('set null');
-            $table->foreignId('id_room_222320')->nullable()->constrained('room_222320', 'id_room_222320')->onDelete('set null');
+            $table->string('id_booking_222320')->primary();
+            $table->string('id_user_222320')->nullable();
+            $table->foreign('id_user_222320')->references('user_id_222320')->on('users_222320')->onDelete('set null');
+
+            $table->string('id_room_222320')->nullable();
+            $table->foreign('id_room_222320')->references('id_room_222320')->on('room_222320')->onDelete('set null');
             $table->date('checkin_date_222320');
             $table->date('checkout_date_222320');
             $table->integer('jumlah_orang_222320');

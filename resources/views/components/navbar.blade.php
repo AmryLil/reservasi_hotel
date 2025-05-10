@@ -17,14 +17,14 @@
                     class="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform {{ Request::is('/') ? 'scale-x-100' : '' }}"></span>
             </a>
 
-            <a href="/shop"
-                class="relative group px-4 py-2 {{ Request::is('shop') ? 'text-blue-600 font-medium' : 'text-gray-700' }}">
-                Reservasi
+            <a href="/rooms"
+                class="relative group px-4 py-2 {{ Request::is('rooms') ? 'text-blue-600 font-medium' : 'text-gray-700' }}">
+                Kamar
                 <span
                     class="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform {{ Request::is('shop') ? 'scale-x-100' : '' }}"></span>
             </a>
 
-            <a href="/kategori"
+            <a href="/galery"
                 class="relative group px-4 py-2 {{ Request::is('kategori') ? 'text-blue-600 font-medium' : 'text-gray-700' }}">
                 Galery
                 <span
@@ -77,17 +77,6 @@
         </div>
 
         @if (Auth::check())
-            {{-- cart icon with badge --}}
-            <a href="{{ route('cart.view') }}" class="relative p-2 rounded-full hover:bg-gray-100 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-                <span
-                    class="absolute top-0 right-0 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-blue-600 rounded-full">3</span>
-            </a>
-
             {{-- user profile menu --}}
             <div class="drawer drawer-end z-50">
                 <input id="my-drawer-4" type="checkbox" class="drawer-toggle" />
@@ -95,9 +84,15 @@
                     <label for="my-drawer-4" class="drawer-button">
                         <div
                             class="flex items-center cursor-pointer space-x-2 border border-gray-200 rounded-full pr-3 pl-1 py-1 hover:bg-gray-50 transition-colors">
-                            <div class="h-8 w-8 rounded-full overflow-hidden">
-                                <img alt="User Avatar" class="h-full w-full object-cover"
-                                    src="{{ Auth::user()->profile_photo ? asset('storage/' . Auth::user()->profile_photo) : asset('images/produk.png') }}" />
+                            <div
+                                class="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-medium overflow-hidden">
+                                @if (Auth::user()->profile_photo)
+                                    <img alt="User Avatar" class="h-full w-full object-cover"
+                                        src="{{ asset('storage/' . Auth::user()->profile_photo) }}" />
+                                @else
+                                    <span>{{ strtoupper(substr(session('name'), 0, 1)) .
+                                        (str_word_count(session('name')) > 1 ? strtoupper(substr(explode(' ', session('name'))[1], 0, 1)) : '') }}</span>
+                                @endif
                             </div>
                             <span
                                 class="text-sm font-medium text-gray-700 hidden sm:inline">{{ session('name') }}</span>
@@ -116,10 +111,17 @@
                         <!-- Sidebar header -->
                         <div class="p-6 bg-blue-600 text-white">
                             <div class="flex items-center space-x-4">
-                                <div class="h-16 w-16 rounded-full bg-white p-1">
-                                    <img class="w-full h-full rounded-full object-cover"
-                                        src="{{ Auth::user()->profile_photo ? asset('storage/' . Auth::user()->profile_photo) : asset('images/produk.png') }}"
-                                        alt="Avatar">
+                                <div class="h-16 w-16 rounded-full bg-white p-1 flex items-center justify-center">
+                                    @if (Auth::user()->profile_photo)
+                                        <img class="w-full h-full rounded-full object-cover"
+                                            src="{{ asset('storage/' . Auth::user()->profile_photo) }}" alt="Avatar">
+                                    @else
+                                        <div
+                                            class="w-full h-full rounded-full bg-blue-600 flex items-center justify-center text-white text-2xl font-bold">
+                                            {{ strtoupper(substr(session('name'), 0, 1)) .
+                                                (str_word_count(session('name')) > 1 ? strtoupper(substr(explode(' ', session('name'))[1], 0, 1)) : '') }}
+                                        </div>
+                                    @endif
                                 </div>
                                 <div>
                                     <h2 class="text-xl font-bold">{{ session('name') }}</h2>
@@ -132,7 +134,7 @@
                         <nav class="p-4">
                             <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-4">Menu</p>
 
-                            <a href="{{ route('user.profile') }}"
+                            <a href="#"
                                 class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-100 mb-1">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none"
                                     viewBox="0 0 24 24" stroke="currentColor">
@@ -142,17 +144,7 @@
                                 <span class="font-medium text-gray-700">Profile Saya</span>
                             </a>
 
-                            <a href="{{ route('pesanan') }}"
-                                class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-100 mb-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                </svg>
-                                <span class="font-medium text-gray-700">Pesanan Saya</span>
-                            </a>
-
-                            <a href="{{ route('transaksi.index') }}"
+                            <a href="#"
                                 class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-100 mb-1">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none"
                                     viewBox="0 0 24 24" stroke="currentColor">
@@ -160,16 +152,6 @@
                                         d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                                 <span class="font-medium text-gray-700">Riwayat Transaksi</span>
-                            </a>
-
-                            <a href="{{ route('cart.view') }}"
-                                class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-100 mb-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                                </svg>
-                                <span class="font-medium text-gray-700">Keranjang</span>
                             </a>
 
                             <div class="border-t border-gray-200 my-4"></div>
@@ -218,7 +200,7 @@
         class="fixed inset-y-0 right-0 max-w-xs w-full bg-white shadow-xl z-50 transform transition-transform duration-300">
         <div class="flex justify-between items-center p-4 border-b">
             <div class="text-xl font-bold">
-                <span class="text-blue-600">TERRA</span><span class="text-gray-800">SHOP</span>
+                <span class="text-blue-600">RESERVASI</span><span class="text-gray-800">HOTEL</span>
             </div>
             <button class="p-2 rounded-full hover:bg-gray-100">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
@@ -229,8 +211,8 @@
         </div>
         <nav class="p-4">
             <a href="/" class="block py-3 px-4 text-gray-700 border-b border-gray-100">Beranda</a>
-            <a href="/shop" class="block py-3 px-4 text-gray-700 border-b border-gray-100">Toko</a>
-            <a href="/kategori" class="block py-3 px-4 text-gray-700 border-b border-gray-100">Kategori</a>
+            <a href="/rooms" class="block py-3 px-4 text-gray-700 border-b border-gray-100">Kamar</a>
+            <a href="/galery" class="block py-3 px-4 text-gray-700 border-b border-gray-100">Gallery</a>
             <a href="/about" class="block py-3 px-4 text-gray-700 border-b border-gray-100">Tentang Kami</a>
             <a href="/contact-us" class="block py-3 px-4 text-gray-700 border-b border-gray-100">Kontak</a>
         </nav>

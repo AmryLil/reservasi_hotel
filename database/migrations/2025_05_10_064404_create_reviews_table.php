@@ -11,8 +11,9 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('review_222320', function (Blueprint $table) {
-            $table->id('id_review_222320');
-            $table->foreignId('id_user_222320')->nullable()->constrained('users_222320', 'user_id_222320')->onDelete('set null');
+            $table->string('id_review_222320')->primary();
+            $table->string('id_user_222320')->nullable();
+            $table->foreign('id_user_222320')->references('user_id_222320')->on('users_222320')->onDelete('set null');
             $table->integer('rating_222320')->nullable();
             $table->text('komentar_222320')->nullable();
             $table->timestamps();

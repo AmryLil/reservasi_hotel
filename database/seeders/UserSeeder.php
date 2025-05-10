@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Facades\IdGenerator;
+use App\Helpers\IdGenerator as HelpersIdGenerator;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -16,6 +18,7 @@ class UserSeeder extends Seeder
     {
         // Create admin user
         User::create([
+            'user_id_222320'  => \App\Helpers\IdGenerator::userId(),
             'nama_222320'     => 'Admin Hotel',
             'email_222320'    => 'admin@hotel.com',
             'phone_222320'    => '081234567890',
@@ -27,6 +30,7 @@ class UserSeeder extends Seeder
 
         // Create regular users
         User::create([
+            'user_id_222320'  => \App\Helpers\IdGenerator::userId(),
             'nama_222320'     => 'John Doe',
             'email_222320'    => 'john@example.com',
             'phone_222320'    => '081234567891',
@@ -37,6 +41,7 @@ class UserSeeder extends Seeder
         ]);
 
         User::create([
+            'user_id_222320'  => \App\Helpers\IdGenerator::userId(),
             'nama_222320'     => 'Jane Smith',
             'email_222320'    => 'jane@example.com',
             'phone_222320'    => '081234567892',

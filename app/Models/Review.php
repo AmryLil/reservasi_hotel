@@ -24,6 +24,15 @@ class Review extends Model
      */
     protected $primaryKey = 'id_review_222320';
 
+    public $incrementing = false;
+
+    /**
+     * The data type of the auto-incrementing ID.
+     *
+     * @var string
+     */
+    protected $keyType = 'string';
+
     /**
      * The attributes that are mass assignable.
      *

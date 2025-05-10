@@ -4,71 +4,238 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
-    /**
-     * Menampilkan data user yang sedang login.
-     *
-     * @return \Illuminate\View\View
-     */
-    public function viewProfile()
-    {
-        $user = Auth::user();
-        return view('my-profile', compact('user'));
+  /**
+   * Display a listing of the users.
+   *
+   * @return \Illuminate\Http\Response
+   */
+  public function index()
+  {
+    $users = User::all();
+    return view('users.index', compact('users'));
+  }
+
+  /**
+   * Show the form for creating a new user.
+   *
+   * @return \Illuminate\Http\Response
+   */
+  public function create()
+  {
+    return view('users.create');
+  }
+
+  /**
+   * Store a newly created user in storage.
+   *
+   * @param  \Illuminate\Http\Request  $request
+   * @return \Illuminate\Http\Response
+   */
+  public function store(Request $request)
+  {
+    $request->validate([
+      'nama_222320'     => 'required|string|max:255',
+      'email_222320'    => 'required|string|email|max:255|unique:users_222320,email_222320',
+      'phone_222320'    => 'required|string|max:15',
+      'alamat_222320'   => 'required|string',
+      'gender_222320'   => 'required|in:male,female',
+      'password_222320' => 'required|string|min:8|confirmed',
+      'role_222320'     => 'required|in:admin,user',
+    ]);
+
+    $user = User::create([
+      'user_id_222320'  => Str::uuid(),
+      'nama_222320'     => $request->nama_222320,
+      'email_222320'    => $request->email_222320,
+      'phone_222320'    => $request->phone_222320,
+      'alamat_222320'   => $request->alamat_222320,
+      'gender_222320'   => $request->gender_222320,
+      'password_222320' => Hash::make($request->password_222320),
+      'role_222320'     => $request->role_222320,
+    ]);
+
+    return redirect()
+      ->route('users.index')
+      ->with('success', 'User created successfully.');
+  }
+
+  /**
+   * Display the specified user.
+   *
+   * @param  \App\Models\User  $user
+   * @return \Illuminate\Http\Response
+   */
+  public function show(User $user)
+  {
+    return view('users.show', compact('user'));
+  }
+
+  /**
+   * Show the form for editing the specified user.
+   *
+   * @param  \App\Models\User  $user
+   * @return \Illuminate\Http\Response
+   */
+  public function edit(User $user)
+  {
+    return view('users.edit', compact('user'));
+  }
+
+  /**
+   * Update the specified user in storage.
+   *
+   * @param  \Illuminate\Http\Request  $request
+   * @param  \App\Models\User  $user
+   * @return \Illuminate\Http\Response
+   */
+  public function update(Request $request, User $user)
+  {
+    $rules = [
+      'nama_222320'   => 'required|string|max:255',
+      'phone_222320'  => 'required|string|max:15',
+      'alamat_222320' => 'required|string',
+      'gender_222320' => 'required|in:male,female',
+      'role_222320'   => 'required|in:admin,user',
+    ];
+
+    // Only validate email if it's changed
+    if ($request->email_222320 != $user->email_222320) {
+      $rules['email_222320'] = 'required|string|email|max:255|unique:users_222320,email_222320';
     }
 
-    /**
-     * Menampilkan halaman edit data user yang sedang login.
-     *
-     * @return \Illuminate\View\View
-     */
-    public function editProfile()
-    {
-        $user = Auth::user();
-        return view('user.edit', compact('user'));
+    // Only validate password if it's provided
+    if ($request->filled('password_222320')) {
+      $rules['password_222320'] = 'string|min:8|confirmed';
     }
 
-    /**
-     * Memperbarui data user yang sedang login.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function updateProfile(Request $request)
-    {
-        // Ambil ID pengguna dari sesi yang sedang login
-        $userId = Auth::user()->id;
-        $user   = User::findOrFail($userId);
+    $request->validate($rules);
 
-        // Validasi input
-        $request->validate([
-            'name'          => 'required|string|max:255',
-            'email'         => 'required|email|unique:users,email,' . $user->id,
-            'gender'        => 'nullable|in:male,female',
-            'address'       => 'nullable|string|max:255',
-            'phone'         => 'nullable|string|max:20',
-            'birth_date'    => 'nullable|date',
-            'profile_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+    $userData = [
+      'nama_222320'   => $request->nama_222320,
+      'email_222320'  => $request->email_222320,
+      'phone_222320'  => $request->phone_222320,
+      'alamat_222320' => $request->alamat_222320,
+      'gender_222320' => $request->gender_222320,
+      'role_222320'   => $request->role_222320,
+    ];
 
-        // Jika ada file yang diupload, simpan foto profil
-        if ($request->hasFile('profile_photo')) {
-            // Hapus foto lama jika ada
-            if ($user->profile_photo && file_exists(storage_path('app/public/' . $user->profile_photo))) {
-                unlink(storage_path('app/public/' . $user->profile_photo));
-            }
-
-            // Upload foto baru
-            $path                = $request->file('profile_photo')->store('profile_photos', 'public');
-            $user->profile_photo = $path;
-        }
-
-        // Update data pengguna
-        $user->update($request->only(['name', 'email', 'gender', 'address', 'phone', 'birth_date']));
-
-        return redirect()->route('user.profile')->with('success', 'Profile updated successfully!');
+    if ($request->filled('password_222320')) {
+      $userData['password_222320'] = Hash::make($request->password_222320);
     }
+
+    $user->update($userData);
+
+    return redirect()
+      ->route('users.index')
+      ->with('success', 'User updated successfully');
+  }
+
+  /**
+   * Remove the specified user from storage.
+   *
+   * @param  \App\Models\User  $user
+   * @return \Illuminate\Http\Response
+   */
+  public function destroy(User $user)
+  {
+    $user->delete();
+
+    return redirect()
+      ->route('users.index')
+      ->with('success', 'User deleted successfully');
+  }
+
+  /**
+   * Display the user profile.
+   *
+   * @return \Illuminate\Http\Response
+   */
+  public function profile()
+  {
+    $user = auth()->user();
+    return view('users.profile', compact('user'));
+  }
+
+  /**
+   * Update the user profile.
+   *
+   * @param  \Illuminate\Http\Request  $request
+   * @return \Illuminate\Http\Response
+   */
+  public function updateProfile(Request $request)
+  {
+    $user = auth()->user();
+
+    $rules = [
+      'nama_222320'   => 'required|string|max:255',
+      'phone_222320'  => 'required|string|max:15',
+      'alamat_222320' => 'required|string',
+      'gender_222320' => 'required|in:male,female',
+    ];
+
+    // Only validate email if it's changed
+    if ($request->email_222320 != $user->email_222320) {
+      $rules['email_222320'] = 'required|string|email|max:255|unique:users_222320,email_222320';
+    }
+
+    $request->validate($rules);
+
+    $userData = [
+      'nama_222320'   => $request->nama_222320,
+      'email_222320'  => $request->email_222320,
+      'phone_222320'  => $request->phone_222320,
+      'alamat_222320' => $request->alamat_222320,
+      'gender_222320' => $request->gender_222320,
+    ];
+
+    $user->update($userData);
+
+    return redirect()
+      ->route('profile')
+      ->with('success', 'Profile updated successfully');
+  }
+
+  /**
+   * Show the form for changing password.
+   *
+   * @return \Illuminate\Http\Response
+   */
+  public function changePassword()
+  {
+    return view('users.change-password');
+  }
+
+  /**
+   * Update the user's password.
+   *
+   * @param  \Illuminate\Http\Request  $request
+   * @return \Illuminate\Http\Response
+   */
+  public function updatePassword(Request $request)
+  {
+    $request->validate([
+      'current_password' => 'required|string',
+      'password_222320'  => 'required|string|min:8|confirmed',
+    ]);
+
+    $user = auth()->user();
+
+    if (!Hash::check($request->current_password, $user->password_222320)) {
+      return back()->withErrors(['current_password' => 'The current password is incorrect.']);
+    }
+
+    $user->update([
+      'password_222320' => Hash::make($request->password_222320),
+    ]);
+
+    return redirect()
+      ->route('profile')
+      ->with('success', 'Password changed successfully');
+  }
 }

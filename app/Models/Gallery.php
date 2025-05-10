@@ -24,6 +24,15 @@ class Gallery extends Model
      */
     protected $primaryKey = 'id_gallery_222320';
 
+    public $incrementing = false;
+
+    /**
+     * The data type of the auto-incrementing ID.
+     *
+     * @var string
+     */
+    protected $keyType = 'string';
+
     /**
      * The attributes that are mass assignable.
      *

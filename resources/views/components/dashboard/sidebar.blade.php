@@ -27,7 +27,7 @@
         <p class="px-2 text-xs font-semibold text-blue-300 uppercase tracking-wider mb-4">Menu Utama</p>
 
         <!-- Dashboard -->
-        <a href="/admin/dashboard"
+        <a href="#"
             class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-blue-700/50 mb-1 transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-300" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor">
@@ -38,7 +38,7 @@
         </a>
 
         <!-- Manajemen User -->
-        <a href="/admin/users"
+        <a href="#"
             class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-blue-700/50 mb-1 transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-300" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor">
@@ -49,7 +49,7 @@
         </a>
 
         <!-- Kamar -->
-        <a href="/admin/produk"
+        <a href="{{ route('admin.rooms.index') }}"
             class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-blue-700/50 mb-1 transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-300" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor">
@@ -58,9 +58,18 @@
             </svg>
             <span class="font-medium">Kamar</span>
         </a>
+        <a href="{{ route('admin.tiperoom.index') }}"
+            class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-blue-700/50 mb-1 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-300" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+            <span class="font-medium">Tipe Kamar</span>
+        </a>
 
         <!-- Reservasi -->
-        <a href="/admin/transaksi"
+        <a href="#"
             class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-blue-700/50 mb-1 transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-300" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor">
@@ -71,18 +80,10 @@
         </a>
 
         <!-- Tipe Kamar -->
-        <a href="/admin/room-types"
-            class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-blue-700/50 mb-1 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-300" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-            </svg>
-            <span class="font-medium">Tipe Kamar</span>
-        </a>
+
 
         <!-- Laporan -->
-        <a href="/admin/reports"
+        <a href="#"
             class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-blue-700/50 mb-1 transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-300" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor">
