@@ -10,13 +10,16 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('sessions', function (Blueprint $table) {
-            $table->string('id')->primary();
-            $table->foreignId('user_id')->nullable()->index();
-            $table->string('ip_address', 45)->nullable();
-            $table->text('user_agent')->nullable();
-            $table->longText('payload');
-            $table->integer('last_activity')->index();
+        Schema::create('users_222320', function (Blueprint $table) {
+            $table->id('user_id_222320');
+            $table->string('nama_222320', 100);
+            $table->string('email_222320', 100)->unique();
+            $table->string('phone_222320', 15)->nullable();
+            $table->text('alamat_222320')->nullable();
+            $table->enum('gender_222320', ['L', 'P'])->nullable();
+            $table->string('password_222320', 255);
+            $table->enum('role_222320', ['admin', 'user'])->default('user');
+            $table->timestamps();
         });
     }
 
@@ -25,8 +28,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
-        Schema::dropIfExists('sessions');
+        Schema::dropIfExists('users_222320');
     }
 };

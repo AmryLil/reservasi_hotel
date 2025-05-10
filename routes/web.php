@@ -10,6 +10,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductDetailsController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RoomController;
 use App\Http\Controllers\SignupController;
 use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\UserController;
@@ -17,7 +18,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 // Halaman utama
-Route::get('/', [ProductController::class, 'Best4Product'])->name('product.best');
+Route::get('/', [RoomController::class, 'Best4Product'])->name('product.best');
 
 // Login dan Logout
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login.form');
@@ -29,7 +30,7 @@ Route::get('/signup', [SignupController::class, 'showSignupForm'])->name('signup
 Route::post('/signup', [SignupController::class, 'signup'])->name('signup');
 
 // Produk dan Kategori
-Route::get('/shop', [ProductController::class, 'index'])->name('products.index');
+Route::get('/shop', [RoomController::class, 'index'])->name('products.index');
 Route::get('/product/{id}', [ProductDetailsController::class, 'showProductDetails'])->name('product.show');
 Route::get('/kategori', [CategoryProductController::class, 'index'])->name('categories');
 Route::get('/kategori/{id}', [CategoryProductController::class, 'show'])->name('categories.show');
@@ -61,13 +62,13 @@ Route::prefix('admin')->group(function () {
 
     // Produk di Dashboard
     Route::prefix('produk')->group(function () {
-        Route::get('/', [ProductController::class, 'showProduct'])->name('dashboard.products');
-        Route::get('/create', [ProductController::class, 'create'])->name('products.create');
-        Route::post('/', [ProductController::class, 'store'])->name('products.store');
-        Route::get('/{id}', [ProductController::class, 'show'])->name('products.show');
-        Route::get('/{id}/edit', [ProductController::class, 'edit'])->name('products.edit');
-        Route::put('/{id}', [ProductController::class, 'update'])->name('products.update');
-        Route::delete('/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
+        Route::get('/', [RoomController::class, 'showProduct'])->name('dashboard.products');
+        Route::get('/create', [RoomController::class, 'create'])->name('products.create');
+        Route::post('/', [RoomController::class, 'store'])->name('products.store');
+        Route::get('/{id}', [RoomController::class, 'show'])->name('products.show');
+        Route::get('/{id}/edit', [RoomController::class, 'edit'])->name('products.edit');
+        Route::put('/{id}', [RoomController::class, 'update'])->name('products.update');
+        Route::delete('/{id}', [RoomController::class, 'destroy'])->name('products.destroy');
     });
 
     // Kategori di Dashboard

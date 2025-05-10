@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Toko Pakaian - @yield('title', 'Laravel')</title>
+    <title>Reservasi Hotel - @yield('title', 'Laravel')</title>
 
 
     <!-- CSS -->

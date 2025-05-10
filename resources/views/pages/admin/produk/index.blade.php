@@ -5,8 +5,8 @@
     <div class="rounded-xl pt-20 w-full">
         <div
             class="flex justify-between items-center mb-4 p-4 text-blue-800 rounded-t-xl bg-white shadow-md border-l-4 border-blue-600">
-            <h1 class="text-2xl font-bold">Kelola Data Booking</h1>
-            <a href="/admin/booking/create">
+            <h1 class="text-2xl font-bold">Kelola Data Kamar</h1>
+            <a href="/admin/produk/create">
                 <button
                     class="bg-blue-600 text-white hover:bg-blue-700 font-semibold px-4 py-2 rounded-lg shadow-md transition duration-300 ease-in-out flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -14,7 +14,7 @@
                             d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
                             clip-rule="evenodd" />
                     </svg>
-                    Tambah Booking
+                    Tambah Kamar
                 </button>
             </a>
         </div>
@@ -29,9 +29,9 @@
                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
                     </div>
-                    <input type="text" id="search" placeholder="Cari booking..."
+                    <input type="text" id="search" placeholder="Cari kamar..."
                         class="border-2 border-blue-200 p-2 pl-10 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                        onkeyup="searchBookings()">
+                        onkeyup="searchRooms()">
                 </div>
                 <button
                     class="flex items-center justify-center bg-blue-100 text-blue-800 p-2 rounded-lg hover:bg-blue-200 transition">
@@ -61,36 +61,29 @@
             <table class="table-auto w-full border-collapse rounded-xl overflow-hidden shadow-sm">
                 <thead class="bg-blue-600 text-white text-lg">
                     <tr>
-                        <th class="py-4 px-4 text-left">ID</th>
-                        <th class="py-4 px-4 text-left">User</th>
-                        <th class="py-4 px-4 text-left">Kamar</th>
-                        <th class="py-4 px-4 text-left">Check-in</th>
-                        <th class="py-4 px-4 text-left">Check-out</th>
-                        <th class="py-4 px-4 text-left">Jumlah Orang</th>
-                        <th class="py-4 px-4 text-left">Total Harga</th>
-                        <th class="py-4 px-4 text-left">Status</th>
-                        <th class="py-4 px-4 text-center">Aksi</th>
+                        <th class="py-4 px-6 text-left">No</th>
+                        <th class="py-4 px-6 text-left">Nama Kamar</th>
+                        <th class="py-4 px-6 text-left">Gambar</th>
+                        <th class="py-4 px-6 text-left">Status</th>
+                        <th class="py-4 px-6 text-left">Tipe Kamar</th>
+                        <th class="py-4 px-6 text-center">Aksi</th>
                     </tr>
                 </thead>
-                <tbody id="booking-table" class="text-gray-700">
+                <tbody id="room-table" class="text-gray-700">
                     <tr class="odd:bg-white even:bg-blue-50 hover:bg-blue-100 transition duration-200">
-                        <td class="py-4 px-4">1</td>
-                        <td class="py-4 px-4">Ahmad Fadillah</td>
-                        <td class="py-4 px-4 font-semibold">Deluxe Room 101</td>
-                        <td class="py-4 px-4">2025-05-10</td>
-                        <td class="py-4 px-4">2025-05-12</td>
-                        <td class="py-4 px-4">2</td>
-                        <td class="py-4 px-4">Rp 2.500.000</td>
-                        <td class="py-4 px-4">
-                            <select onchange="updateStatus(this, 1)"
-                                class="text-sm rounded-full px-2 py-1 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="pending" selected>pending</option>
-                                <option value="confirmed">confirmed</option>
-                                <option value="checked_in">checked_in</option>
-                                <option value="completed">completed</option>
-                            </select>
+                        <td class="py-4 px-6">1</td>
+                        <td class="py-4 px-6 font-semibold">Deluxe Room 101</td>
+                        <td class="py-4 px-6">
+                            <div class="h-16 w-24 rounded overflow-hidden">
+                                <img src="{{ asset('images/room.jpg') }}" alt="Room 101" class="h-full w-full object-cover">
+                            </div>
                         </td>
-                        <td class="py-4 px-4 text-center">
+                        <td class="py-4 px-6">
+                            <span
+                                class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">available</span>
+                        </td>
+                        <td class="py-4 px-6">Deluxe</td>
+                        <td class="py-4 px-6 text-center">
                             <div class="flex justify-center space-x-2">
                                 <a href="#"
                                     class="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 transition">
@@ -100,7 +93,7 @@
                                             d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                     </svg>
                                 </a>
-                                <button onclick="confirmDelete(1)"
+                                <button onclick="confirmDelete()"
                                     class="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 transition">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
                                         fill="currentColor">
@@ -113,23 +106,20 @@
                         </td>
                     </tr>
                     <tr class="odd:bg-white even:bg-blue-50 hover:bg-blue-100 transition duration-200">
-                        <td class="py-4 px-4">2</td>
-                        <td class="py-4 px-4">Siti Nurhaliza</td>
-                        <td class="py-4 px-4 font-semibold">Suite Room 202</td>
-                        <td class="py-4 px-4">2025-05-15</td>
-                        <td class="py-4 px-4">2025-05-18</td>
-                        <td class="py-4 px-4">4</td>
-                        <td class="py-4 px-4">Rp 4.800.000</td>
-                        <td class="py-4 px-4">
-                            <select onchange="updateStatus(this, 2)"
-                                class="text-sm rounded-full px-2 py-1 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="pending">pending</option>
-                                <option value="confirmed" selected>confirmed</option>
-                                <option value="checked_in">checked_in</option>
-                                <option value="completed">completed</option>
-                            </select>
+                        <td class="py-4 px-6">2</td>
+                        <td class="py-4 px-6 font-semibold">Suite Room 202</td>
+                        <td class="py-4 px-6">
+                            <div class="h-16 w-24 rounded overflow-hidden">
+                                <img src="{{ asset('images/room.jpg') }}" alt="Room 202"
+                                    class="h-full w-full object-cover">
+                            </div>
                         </td>
-                        <td class="py-4 px-4 text-center">
+                        <td class="py-4 px-6">
+                            <span
+                                class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full">booked</span>
+                        </td>
+                        <td class="py-4 px-6">Suite</td>
+                        <td class="py-4 px-6 text-center">
                             <div class="flex justify-center space-x-2">
                                 <a href="#"
                                     class="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 transition">
@@ -139,7 +129,7 @@
                                             d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                     </svg>
                                 </a>
-                                <button onclick="confirmDelete(2)"
+                                <button onclick="confirmDelete()"
                                     class="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 transition">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
                                         fill="currentColor">
@@ -152,62 +142,20 @@
                         </td>
                     </tr>
                     <tr class="odd:bg-white even:bg-blue-50 hover:bg-blue-100 transition duration-200">
-                        <td class="py-4 px-4">3</td>
-                        <td class="py-4 px-4">Budi Santoso</td>
-                        <td class="py-4 px-4 font-semibold">Standard Room 305</td>
-                        <td class="py-4 px-4">2025-05-12</td>
-                        <td class="py-4 px-4">2025-05-14</td>
-                        <td class="py-4 px-4">2</td>
-                        <td class="py-4 px-4">Rp 1.600.000</td>
-                        <td class="py-4 px-4">
-                            <select onchange="updateStatus(this, 3)"
-                                class="text-sm rounded-full px-2 py-1 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="pending">pending</option>
-                                <option value="confirmed">confirmed</option>
-                                <option value="checked_in">checked_in</option>
-                                <option value="completed" selected>completed</option>
-                            </select>
-                        </td>
-                        <td class="py-4 px-4 text-center">
-                            <div class="flex justify-center space-x-2">
-                                <a href="#"
-                                    class="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 transition">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
-                                        fill="currentColor">
-                                        <path
-                                            d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                                    </svg>
-                                </a>
-                                <button onclick="confirmDelete(3)"
-                                    class="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 transition">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
-                                        fill="currentColor">
-                                        <path fill-rule="evenodd"
-                                            d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                </button>
+                        <td class="py-4 px-6">3</td>
+                        <td class="py-4 px-6 font-semibold">Standard Room 305</td>
+                        <td class="py-4 px-6">
+                            <div class="h-16 w-24 rounded overflow-hidden">
+                                <img src="{{ asset('images/room.jpg') }}" alt="Room 305"
+                                    class="h-full w-full object-cover">
                             </div>
                         </td>
-                    </tr>
-                    <tr class="odd:bg-white even:bg-blue-50 hover:bg-blue-100 transition duration-200">
-                        <td class="py-4 px-4">4</td>
-                        <td class="py-4 px-4">Dewi Lestari</td>
-                        <td class="py-4 px-4 font-semibold">Deluxe Room 102</td>
-                        <td class="py-4 px-4">2025-05-20</td>
-                        <td class="py-4 px-4">2025-05-23</td>
-                        <td class="py-4 px-4">3</td>
-                        <td class="py-4 px-4">Rp 3.750.000</td>
-                        <td class="py-4 px-4">
-                            <select onchange="updateStatus(this, 4)"
-                                class="text-sm rounded-full px-2 py-1 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="pending">pending</option>
-                                <option value="confirmed">confirmed</option>
-                                <option value="checked_in" selected>checked_in</option>
-                                <option value="completed">completed</option>
-                            </select>
+                        <td class="py-4 px-6">
+                            <span
+                                class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">available</span>
                         </td>
-                        <td class="py-4 px-4 text-center">
+                        <td class="py-4 px-6">Standard</td>
+                        <td class="py-4 px-6 text-center">
                             <div class="flex justify-center space-x-2">
                                 <a href="#"
                                     class="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 transition">
@@ -217,7 +165,7 @@
                                             d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                     </svg>
                                 </a>
-                                <button onclick="confirmDelete(4)"
+                                <button onclick="confirmDelete()"
                                     class="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 transition">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
                                         fill="currentColor">
@@ -237,8 +185,8 @@
                 <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
                     <div>
                         <p class="text-sm text-gray-700">
-                            Menampilkan <span class="font-medium">1</span> sampai <span class="font-medium">4</span> dari
-                            <span class="font-medium">4</span> booking
+                            Menampilkan <span class="font-medium">1</span> sampai <span class="font-medium">3</span> dari
+                            <span class="font-medium">3</span> kamar
                         </p>
                     </div>
                     <div>
@@ -272,27 +220,15 @@
 
     <!-- Confirmation Dialog for Delete -->
     <script>
-        function confirmDelete(id) {
-            if (confirm('Apakah Anda yakin ingin menghapus booking ini?')) {
-                // Di sini akan ada kode untuk mengirim request DELETE ke server
-                console.log('Menghapus booking dengan ID: ' + id);
-            }
+        function confirmDelete() {
+            return confirm('Apakah Anda yakin ingin menghapus kamar ini?');
         }
 
-        // Fungsi untuk update status booking
-        function updateStatus(selectElement, id) {
-            const newStatus = selectElement.value;
-            console.log('Update status booking ID: ' + id + ' menjadi: ' + newStatus);
-            // Di sini akan ada kode untuk mengirim request update ke server
-            // Contoh: notifikasi sukses
-            alert('Status booking berhasil diubah menjadi: ' + newStatus);
-        }
-
-        // Fungsi untuk mencari booking
-        function searchBookings() {
+        // Fungsi untuk mencari kamar
+        function searchRooms() {
             const input = document.getElementById('search');
             const filter = input.value.toLowerCase();
-            const table = document.getElementById('booking-table');
+            const table = document.getElementById('room-table');
             const rows = table.getElementsByTagName('tr');
 
             for (let i = 0; i < rows.length; i++) {
