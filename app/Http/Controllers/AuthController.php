@@ -87,7 +87,7 @@ class AuthController extends Controller
    */
   public function showRegistrationForm()
   {
-    return view('auth.register');
+    return view('pages.auth.signup');
   }
 
   /**
@@ -101,9 +101,9 @@ class AuthController extends Controller
     $request->validate([
       'nama_222320'     => 'required|string|max:255',
       'email_222320'    => 'required|string|email|max:255|unique:users_222320,email_222320',
-      'phone_222320'    => 'required|string|max:15',
-      'alamat_222320'   => 'required|string',
-      'gender_222320'   => 'required|in:male,female',
+      'phone_222320'    => '',
+      'alamat_222320'   => '',
+      'gender_222320'   => '',
       'password_222320' => 'required|string|min:8|confirmed',
     ]);
 
@@ -118,9 +118,9 @@ class AuthController extends Controller
       'role_222320'     => 'user',  // Default role for new registrations
     ]);
 
-    Auth::login($user);
+    // Auth::login($user);
 
-    return redirect()->route('dashboard');
+    return redirect()->route('login');
   }
 
   /**
@@ -136,7 +136,7 @@ class AuthController extends Controller
     $request->session()->invalidate();
     $request->session()->regenerateToken();
 
-    return redirect('/');
+    return redirect()->route('login');
   }
 
   /**

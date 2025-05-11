@@ -49,32 +49,6 @@
 
     {{-- right section with search and auth --}}
     <div class="flex items-center space-x-4">
-        {{-- search button with dropdown --}}
-        <div x-data="{ open: false }" class="relative">
-            <button @click="open = !open" class="p-2 rounded-full hover:bg-gray-100 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5 text-gray-600">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-            </button>
-
-            <!-- Search Form -->
-            <div x-show="open" x-transition class="absolute top-12 right-0 bg-white shadow-lg rounded-lg p-4 w-72">
-                <div class="flex items-center bg-gray-100 rounded-lg px-3 py-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 mr-2" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    </svg>
-                    <input type="text" placeholder="Cari produk..."
-                        class="bg-transparent border-none w-full focus:outline-none text-sm text-gray-700">
-                </div>
-                <div class="mt-2 text-xs text-gray-500">
-                    <p>Pencarian populer: Tanaman Hias, Pot, Pupuk</p>
-                </div>
-            </div>
-        </div>
 
         @if (Auth::check())
             {{-- user profile menu --}}
@@ -160,8 +134,8 @@
                                 @csrf
                                 <button type="submit"
                                     class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-red-50 w-full">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600"
-                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                                     </svg>

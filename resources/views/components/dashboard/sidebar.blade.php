@@ -96,16 +96,16 @@
         <div class="border-t border-blue-700/50 my-6"></div>
 
         <!-- Logout -->
-        <form action="/logout" method="POST">
-            <!-- @csrf would be needed in actual Laravel application -->
+        <form action="{{ route('logout') }}" method="POST">
+            @csrf
             <button type="submit"
-                class="flex items-center w-full space-x-3 px-4 py-3 rounded-lg hover:bg-red-700/50 text-left transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-300" fill="none" viewBox="0 0 24 24"
+                class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-blue-700/50 mb-1 transition-colors w-full">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-50" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>
-                <span class="font-medium">Logout</span>
+                <span class="font-medium text-slate-50">Logout</span>
             </button>
         </form>
     </nav>
