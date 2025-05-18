@@ -1,49 +1,33 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="id">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Register - RESERVASI HOTEL</title>
+    <title>Daftar - RESERVASI HOTEL</title>
     @vite('resources/css/app.css')
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
 </head>
 
 <body class="bg-blue-50">
-    <div class="relative flex items-center w-full justify-center min-h-screen py-12 px-4">
-        <!-- Background Decoration -->
-        <div class="absolute inset-0 overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-72 bg-blue-600 -skew-y-6 transform origin-top-right"></div>
-            <div class="absolute bottom-0 right-0 w-64 h-64 bg-blue-300 rounded-full opacity-20 -mr-20 -mb-20"></div>
-            <div class="absolute top-1/4 left-10 w-32 h-32 bg-blue-200 rounded-full opacity-40"></div>
-        </div>
-
-        <!-- Register Container -->
-        <div class="relative w-full max-w-md">
-            <!-- Login Form Card -->
-            <div class="bg-white shadow-xl rounded-2xl overflow-hidden border border-blue-100">
-                <!-- Decorative Header -->
-                <div class="relative h-24 bg-blue-600 overflow-hidden">
-                    <div class="absolute inset-0 opacity-30">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-full" viewBox="0 0 1440 320">
-                            <path fill="#FFFFFF" fill-opacity="1"
-                                d="M0,224L48,213.3C96,203,192,181,288,154.7C384,128,480,96,576,90.7C672,85,768,107,864,133.3C960,160,1056,192,1152,186.7C1248,181,1344,139,1392,117.3L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z">
-                            </path>
-                        </svg>
-                    </div>
-                    <div class="absolute w-full h-full flex items-center justify-center">
-                        <h1 class="font-bold text-2xl text-white">RESERVASI HOTEL</h1>
-                    </div>
+    <div class="flex items-center justify-center min-h-screen py-8 px-4">
+        <!-- Wadah Registrasi -->
+        <div class="w-full max-w-md">
+            <!-- Kartu Form Registrasi -->
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden border border-blue-100">
+                <!-- Header -->
+                <div class="bg-blue-600 p-4 text-center">
+                    <h1 class="font-bold text-xl text-white">RESERVASI HOTEL</h1>
                 </div>
 
-                <!-- Form Content -->
-                <div class="p-8">
-                    <!-- Title -->
-                    <h2 class="text-center text-2xl font-bold text-blue-800 mb-2">Create Your Account</h2>
-                    <p class="font-light text-center mb-6 text-blue-600">Access your reservations and special offers</p>
+                <!-- Konten Form -->
+                <div class="p-6">
+                    <!-- Judul -->
+                    <h2 class="text-center text-xl font-bold text-blue-800 mb-2">Buat Akun Anda</h2>
+                    <p class="text-center mb-6 text-blue-600 text-sm">Akses reservasi dan penawaran khusus Anda</p>
 
-                    <!-- Error Messages -->
+                    <!-- Pesan Error -->
                     @if ($errors->any())
                         <div class="mb-5 text-red-500 text-sm bg-red-50 p-3 rounded-lg">
                             <ul>
@@ -64,7 +48,7 @@
                     <!-- Form -->
                     <form action="{{ route('signup') }}" method="POST" class="space-y-4">
                         @csrf
-                        <!-- Required Fields -->
+                        <!-- Kolom Wajib -->
                         <div class="flex flex-col space-y-4">
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -76,7 +60,7 @@
                                 </div>
                                 <input
                                     class="w-full border bg-blue-50 border-blue-200 rounded-lg p-3 pl-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none text-sm"
-                                    type="text" name="nama_222320" placeholder="Full Name" required />
+                                    type="text" name="nama_222320" placeholder="Nama Lengkap" required />
                             </div>
 
                             <div class="relative">
@@ -89,7 +73,7 @@
                                 </div>
                                 <input
                                     class="w-full border bg-blue-50 border-blue-200 rounded-lg p-3 pl-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none text-sm"
-                                    type="email" name="email_222320" placeholder="Email Address" required />
+                                    type="email" name="email_222320" placeholder="Alamat Email" required />
                             </div>
 
                             <div class="relative">
@@ -102,7 +86,7 @@
                                 </div>
                                 <input
                                     class="w-full border bg-blue-50 border-blue-200 rounded-lg p-3 pl-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none text-sm"
-                                    type="password" name="password_222320" placeholder="Password" required />
+                                    type="password" name="password_222320" placeholder="Kata Sandi" required />
                             </div>
 
                             <div class="relative">
@@ -115,12 +99,12 @@
                                 </div>
                                 <input
                                     class="w-full border bg-blue-50 border-blue-200 rounded-lg p-3 pl-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none text-sm"
-                                    type="password" name="password_222320_confirmation" placeholder="Confirm Password"
-                                    required />
+                                    type="password" name="password_222320_confirmation"
+                                    placeholder="Konfirmasi Kata Sandi" required />
                             </div>
                         </div>
 
-                        <!-- Toggle for Additional Details -->
+                        <!-- Toggle untuk Detail Tambahan -->
                         <div class="mt-2">
                             <button type="button" id="toggleDetails"
                                 class="text-blue-600 text-sm font-semibold flex items-center hover:text-blue-800 focus:outline-none">
@@ -133,7 +117,7 @@
                             </button>
                         </div>
 
-                        <!-- Optional Fields (Hidden by Default) -->
+                        <!-- Kolom Opsional (Disembunyikan secara Default) -->
                         <div id="additionalDetails" class="hidden space-y-4 pt-2 border-t border-blue-100 mt-2">
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -145,7 +129,7 @@
                                 </div>
                                 <input
                                     class="w-full border bg-blue-50 border-blue-200 rounded-lg p-3 pl-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none text-sm"
-                                    type="text" name="phone_222320" placeholder="Phone Number" />
+                                    type="text" name="phone_222320" placeholder="Nomor Telepon" />
                             </div>
 
                             <div class="relative">
@@ -160,21 +144,21 @@
                                 </div>
                                 <textarea
                                     class="w-full border bg-blue-50 border-blue-200 rounded-lg p-3 pl-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none text-sm"
-                                    name="alamat_222320" placeholder="Address" rows="2"></textarea>
+                                    name="alamat_222320" placeholder="Alamat" rows="2"></textarea>
                             </div>
 
                             <div class="relative">
-                                <label class="block text-sm font-medium text-blue-700 mb-1 ml-1">Gender</label>
+                                <label class="block text-sm font-medium text-blue-700 mb-1 ml-1">Jenis Kelamin</label>
                                 <div class="flex space-x-4 ml-1">
                                     <label class="flex items-center">
                                         <input type="radio" name="gender_222320" value="male"
                                             class="h-4 w-4 text-blue-600 focus:ring-blue-500" />
-                                        <span class="ml-2 text-sm text-gray-700">Male</span>
+                                        <span class="ml-2 text-sm text-gray-700">Laki-laki</span>
                                     </label>
                                     <label class="flex items-center">
                                         <input type="radio" name="gender_222320" value="female"
                                             class="h-4 w-4 text-blue-600 focus:ring-blue-500" />
-                                        <span class="ml-2 text-sm text-gray-700">Female</span>
+                                        <span class="ml-2 text-sm text-gray-700">Perempuan</span>
                                     </label>
                                 </div>
                             </div>
@@ -182,32 +166,32 @@
 
                         <button type="submit"
                             class="w-full bg-blue-600 rounded-lg text-white py-3 hover:bg-blue-700 transition duration-300 font-semibold shadow-md mt-6">
-                            Sign Up
+                            Daftar
                         </button>
                     </form>
 
-                    <!-- Login Link -->
+                    <!-- Link Login -->
                     <div class="mt-6 text-center text-sm text-blue-600">
-                        You have an account?
+                        Sudah memiliki akun?
                         <a href="{{ route('login.form') }}"
-                            class="text-blue-800 font-semibold hover:underline">Login</a>
+                            class="text-blue-800 font-semibold hover:underline">Masuk</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- JavaScript for Toggle Functionality -->
+    <!-- JavaScript untuk Fungsi Toggle -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const toggleButton = document.getElementById('toggleDetails');
             const detailsSection = document.getElementById('additionalDetails');
 
             toggleButton.addEventListener('click', function() {
-                // Toggle visibility
+                // Toggle visibilitas
                 detailsSection.classList.toggle('hidden');
 
-                // Change button text and icon
+                // Ubah teks dan ikon tombol
                 const isVisible = !detailsSection.classList.contains('hidden');
                 toggleButton.innerHTML = isVisible ?
                     '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" /></svg> Sembunyikan Detail Tambahan' :

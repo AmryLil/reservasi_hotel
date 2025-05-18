@@ -17,28 +17,28 @@
                     class="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform {{ Request::is('/') ? 'scale-x-100' : '' }}"></span>
             </a>
 
-            <a href="/rooms"
+            <a href="#"
                 class="relative group px-4 py-2 {{ Request::is('rooms') ? 'text-blue-600 font-medium' : 'text-gray-700' }}">
                 Kamar
                 <span
                     class="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform {{ Request::is('shop') ? 'scale-x-100' : '' }}"></span>
             </a>
 
-            <a href="/galery"
+            <a href="#"
                 class="relative group px-4 py-2 {{ Request::is('kategori') ? 'text-blue-600 font-medium' : 'text-gray-700' }}">
                 Galery
                 <span
                     class="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform {{ Request::is('kategori') ? 'scale-x-100' : '' }}"></span>
             </a>
 
-            <a href="/about"
+            <a href="#"
                 class="relative group px-4 py-2 {{ Request::is('about') ? 'text-blue-600 font-medium' : 'text-gray-700' }}">
                 Tentang Kami
                 <span
                     class="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform {{ Request::is('about') ? 'scale-x-100' : '' }}"></span>
             </a>
 
-            <a href="/contact-us"
+            <a href="#"
                 class="relative group px-4 py-2 {{ Request::is('contact-us') ? 'text-blue-600 font-medium' : 'text-gray-700' }}">
                 Kontak
                 <span
@@ -185,10 +185,10 @@
         </div>
         <nav class="p-4">
             <a href="/" class="block py-3 px-4 text-gray-700 border-b border-gray-100">Beranda</a>
-            <a href="/rooms" class="block py-3 px-4 text-gray-700 border-b border-gray-100">Kamar</a>
-            <a href="/galery" class="block py-3 px-4 text-gray-700 border-b border-gray-100">Gallery</a>
-            <a href="/about" class="block py-3 px-4 text-gray-700 border-b border-gray-100">Tentang Kami</a>
-            <a href="/contact-us" class="block py-3 px-4 text-gray-700 border-b border-gray-100">Kontak</a>
+            <a href="#" class="block py-3 px-4 text-gray-700 border-b border-gray-100">Kamar</a>
+            <a href="#" class="block py-3 px-4 text-gray-700 border-b border-gray-100">Gallery</a>
+            <a href="#" class="block py-3 px-4 text-gray-700 border-b border-gray-100">Tentang Kami</a>
+            <a href="#" class="block py-3 px-4 text-gray-700 border-b border-gray-100">Kontak</a>
         </nav>
     </div>
 </div>
