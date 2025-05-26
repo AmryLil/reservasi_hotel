@@ -42,6 +42,7 @@ class RoomController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
+            'id_room_222320'    => 'required|string|max:255',
             'nama_kamar_222320' => 'required|string|max:255',
             'gambar_222320'     => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'status_222320'     => 'required|string|in:available,booked,maintenance',
@@ -61,6 +62,7 @@ class RoomController extends Controller
         }
 
         Room::create([
+            'id_room_222320'    => $request->id_room_222320,
             'nama_kamar_222320' => $request->nama_kamar_222320,
             'gambar_222320'     => $imagePath ?? null,
             'status_222320'     => $request->status_222320,

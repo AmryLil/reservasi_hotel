@@ -50,7 +50,7 @@ class UserController extends Controller
     ]);
 
     $user = User::create([
-      'user_id_222320'  => Str::uuid(),
+      'email_222320'    => Str::uuid(),
       'nama_222320'     => $request->nama_222320,
       'email_222320'    => $request->email_222320,
       'phone_222320'    => $request->phone_222320,

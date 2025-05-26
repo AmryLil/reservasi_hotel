@@ -23,7 +23,7 @@ class User extends Authenticatable
      *
      * @var string
      */
-    protected $primaryKey = 'user_id_222320';
+    protected $primaryKey = 'email_222320';
 
     public $incrementing = false;
 
@@ -49,17 +49,6 @@ class User extends Authenticatable
         'role_222320',
     ];
 
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($user) {
-            if (empty($user->user_id_222320)) {
-                $user->user_id_222320 = IdGenerator::userId();
-            }
-        });
-    }
-
     public function getAuthPassword()
     {
         return $this->password_222320;
@@ -67,7 +56,7 @@ class User extends Authenticatable
 
     public function getAuthIdentifierName()
     {
-        return 'user_id_222320';
+        return 'email_222320';
     }
 
     /**
@@ -103,7 +92,7 @@ class User extends Authenticatable
      */
     public function bookings()
     {
-        return $this->hasMany(Booking::class, 'id_user_222320', 'user_id_222320');
+        return $this->hasMany(Booking::class, 'id_user_222320', 'email_222320');
     }
 
     /**
@@ -111,6 +100,6 @@ class User extends Authenticatable
      */
     public function reviews()
     {
-        return $this->hasMany(Review::class, 'id_user_222320', 'user_id_222320');
+        return $this->hasMany(Review::class, 'id_user_222320', 'email_222320');
     }
 }

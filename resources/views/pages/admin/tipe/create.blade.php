@@ -26,6 +26,16 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Nama Tipe -->
                     <div>
+                        <label for="tipe_id_222320" class="block text-sm font-medium text-gray-700 mb-1">Kode Tipe
+                            Kamar</label>
+                        <input type="text" name="tipe_id_222320" id="tipe_id_222320" required
+                            class="w-full p-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 @error('tipe_id_222320') border-red-500 @enderror"
+                            value="{{ old('tipe_id_222320') }}" placeholder="Masukkan kode tipe kamar">
+                        @error('tipe_id_222320')
+                            <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div>
                         <label for="nama_tipe_222320" class="block text-sm font-medium text-gray-700 mb-1">Nama Tipe
                             Kamar</label>
                         <input type="text" name="nama_tipe_222320" id="nama_tipe_222320" required

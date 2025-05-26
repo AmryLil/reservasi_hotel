@@ -101,14 +101,13 @@ class AuthController extends Controller
     $request->validate([
       'nama_222320'     => 'required|string|max:255',
       'email_222320'    => 'required|string|email|max:255|unique:users_222320,email_222320',
-      'phone_222320'    => '',
-      'alamat_222320'   => '',
-      'gender_222320'   => '',
+      'phone_222320'    => 'nullable|string|max:255',
+      'alamat_222320'   => 'nullable|string|max:500',
+      'gender_222320'   => 'nullable|string|in:male,female,other',
       'password_222320' => 'required|string|min:8|confirmed',
     ]);
 
     $user = User::create([
-      'user_id_222320'  => Str::uuid(),
       'nama_222320'     => $request->nama_222320,
       'email_222320'    => $request->email_222320,
       'phone_222320'    => $request->phone_222320,
