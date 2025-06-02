@@ -18,7 +18,7 @@ class UserController extends Controller
   public function index()
   {
     $users = User::all();
-    return view('users.index', compact('users'));
+    return view('pages.admin.user.index', compact('users'));
   }
 
   /**
@@ -28,7 +28,7 @@ class UserController extends Controller
    */
   public function create()
   {
-    return view('users.create');
+    return view('pages.admin.user.create');
   }
 
   /**
@@ -73,7 +73,7 @@ class UserController extends Controller
    */
   public function show(User $user)
   {
-    return view('users.show', compact('user'));
+    return view('pages.admin.user.show', compact('user'));
   }
 
   /**
@@ -84,7 +84,7 @@ class UserController extends Controller
    */
   public function edit(User $user)
   {
-    return view('users.edit', compact('user'));
+    return view('pages.admin.user.edit', compact('user'));
   }
 
   /**
@@ -159,7 +159,7 @@ class UserController extends Controller
   public function profile()
   {
     $user = auth()->user();
-    return view('users.profile', compact('user'));
+    return view('pages.admin.user.profile', compact('user'));
   }
 
   /**
@@ -208,7 +208,7 @@ class UserController extends Controller
    */
   public function changePassword()
   {
-    return view('users.change-password');
+    return view('pages.admin.user.change-password');
   }
 
   /**

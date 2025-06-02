@@ -25,7 +25,15 @@
     <!-- Navigation Menu -->
     <nav class="px-4 py-6">
         <p class="px-2 text-xs font-semibold text-blue-300 uppercase tracking-wider mb-4">Menu Utama</p>
-
+        <a href="{{ route('admin.users.index') }}"
+            class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-blue-700/50 mb-1 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-300" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+            <span class="font-medium">Pengguna</span>
+        </a>
         <!-- Kamar -->
         <a href="{{ route('admin.rooms.index') }}"
             class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-blue-700/50 mb-1 transition-colors">
@@ -47,6 +55,7 @@
             </svg>
             <span class="font-medium">Tipe Kamar</span>
         </a>
+
 
         <div class="border-t border-blue-700/50 my-6"></div>
 

@@ -61,4 +61,5 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('rooms/available', [RoomController::class, 'available'])->name('rooms.available');
     Route::post('rooms/{id}/change-status', [RoomController::class, 'changeStatus'])->name('rooms.changeStatus');
     Route::get('rooms/type/{typeId}', [RoomController::class, 'getByType'])->name('rooms.byType');
+    Route::resource('users', UserController::class);
 });
