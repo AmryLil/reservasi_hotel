@@ -105,6 +105,7 @@ class AuthController extends Controller
       'alamat_222320'   => 'nullable|string|max:500',
       'gender_222320'   => 'nullable|string|in:male,female,other',
       'password_222320' => 'required|string|min:8|confirmed',
+      'role_222320'     => 'required|string|in:admin,user',
     ]);
 
     $user = User::create([
@@ -114,7 +115,7 @@ class AuthController extends Controller
       'alamat_222320'   => $request->alamat_222320,
       'gender_222320'   => $request->gender_222320,
       'password_222320' => Hash::make($request->password_222320),
-      'role_222320'     => 'user',  // Default role for new registrations
+      'role_222320'     => $request->role_222320,
     ]);
 
     // Auth::login($user);

@@ -77,6 +77,17 @@
                             </div>
 
                             <div class="relative">
+                                <label for="role_222320" class="block mb-1 text-sm font-medium text-gray-700">Pilih
+                                    Role</label>
+                                <select id="role_222320" name="role_222320" required
+                                    class="w-full border bg-blue-50 border-blue-200 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none text-sm">
+                                    <option value="" disabled selected>Pilih role Anda</option>
+                                    <option value="admin">Admin</option>
+                                    <option value="user">User</option>
+                                </select>
+                            </div>
+
+                            <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-400" fill="none"
                                         viewBox="0 0 24 24" stroke="currentColor">

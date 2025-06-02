@@ -2,7 +2,7 @@
 
 @section('content')
     <!-- Dashboard Header -->
-    <div class="rounded-xl pt-20 w-full">
+    <div class="rounded-xl w-full">
         <div
             class="flex justify-between items-center mb-4 p-4 text-blue-800 rounded-t-xl bg-white shadow-md border-l-4 border-blue-600">
             <h1 class="text-2xl font-bold">Edit Kamar</h1>

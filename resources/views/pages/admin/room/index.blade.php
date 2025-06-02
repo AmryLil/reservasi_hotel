@@ -2,7 +2,7 @@
 
 @section('content')
     <!-- Dashboard Header -->
-    <div class="rounded-xl pt-20 w-full">
+    <div class="rounded-xl  w-full">
         <div
             class="flex justify-between items-center mb-4 p-4 text-blue-800 rounded-t-xl bg-white shadow-md border-l-4 border-blue-600">
             <h1 class="text-2xl font-bold">Kelola Data Kamar</h1>
@@ -81,6 +81,7 @@
                 <thead class="bg-blue-600 text-white text-lg">
                     <tr>
                         <th class="py-4 px-6 text-left">No</th>
+                        <th class="py-4 px-6 text-left">Kode Kamar</th>
                         <th class="py-4 px-6 text-left">Nama Kamar</th>
                         <th class="py-4 px-6 text-left">Gambar</th>
                         <th class="py-4 px-6 text-left">Status</th>
@@ -92,6 +93,7 @@
                     @forelse($rooms as $index => $room)
                         <tr class="odd:bg-white even:bg-blue-50 hover:bg-blue-100 transition duration-200">
                             <td class="py-4 px-6">{{ $index + 1 }}</td>
+                            <td class="py-4 px-6 font-semibold">{{ $room->id_room_222320 }}</td>
                             <td class="py-4 px-6 font-semibold">{{ $room->nama_kamar_222320 }}</td>
                             <td class="py-4 px-6">
                                 <div class="h-16 w-24 rounded overflow-hidden">

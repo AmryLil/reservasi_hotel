@@ -73,6 +73,16 @@
                                     class="w-full border bg-blue-50 border-blue-200 rounded-lg p-3 pl-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none text-sm"
                                     type="password" name="password" placeholder="Kata Sandi" required />
                             </div>
+                            <div class="relative">
+                                <label for="role" class="block mb-1 text-sm font-medium text-gray-700">Pilih
+                                    Role</label>
+                                <select id="role" name="role" required
+                                    class="w-full border bg-blue-50 border-blue-200 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none text-sm">
+                                    <option value="" disabled selected>Pilih role Anda</option>
+                                    <option value="admin">Admin</option>
+                                    <option value="user">User</option>
+                                </select>
+                            </div>
                         </div>
 
                         <button type="submit"
