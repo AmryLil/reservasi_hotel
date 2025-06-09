@@ -202,20 +202,30 @@ class RoomController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect()
-                ->back()
-                ->withErrors($validator)
-                ->withInput();
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid status value'
+            ], 400);
         }
 
         $room                = Room::findOrFail($id);
         $room->status_222320 = $request->status_222320;
         $room->save();
 
-        return redirect()
-            ->back()
-            ->with('success', 'Room status updated successfully');
+        return response()->json([
+            'success' => true,
+            'message' => 'Room status updated successfully',
+            'status'  => $request->status_222320
+        ]);
     }
+
+    /**
+     * Update room stock.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
 
     /**
      * Get rooms by type.

@@ -107,17 +107,20 @@
                                     @endif
                                 </div>
                             </td>
+
                             <td class="py-4 px-6">
-                                @if ($room->status_222320 == 'available')
-                                    <span
-                                        class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">available</span>
-                                @elseif($room->status_222320 == 'booked')
-                                    <span
-                                        class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full">booked</span>
-                                @else
-                                    <span
-                                        class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full">maintenance</span>
-                                @endif
+                                <select onchange="updateStatus('{{ $room->id_room_222320 }}', this.value)"
+                                    class="bg-white border border-gray-300 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                    id="status-{{ $room->id_room_222320 }}">
+                                    <option value="available" {{ $room->status_222320 == 'available' ? 'selected' : '' }}>
+                                        Available</option>
+                                    <option value="booked" {{ $room->status_222320 == 'booked' ? 'selected' : '' }}>
+                                        Booked</option>
+                                    <option value="maintenance"
+                                        {{ $room->status_222320 == 'maintenance' ? 'selected' : '' }}>
+                                        Maintenance</option>
+                                </select>
+
                             </td>
                             <td class="py-4 px-6">{{ $room->tipeRoom->nama_tipe_222320 ?? 'N/A' }}</td>
                             <td class="py-4 px-6 text-center">
@@ -160,7 +163,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="py-6 px-6 text-center text-gray-500">Tidak ada data kamar</td>
+                            <td colspan="8" class="py-6 px-6 text-center text-gray-500">Tidak ada data kamar</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -182,8 +185,19 @@
         </div>
     </div>
 
+
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed top-4 right-4 z-50 hidden">
+        <div class="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg">
+            <span id="toastMessage"></span>
+        </div>
+    </div>
+
     <!-- Confirmation Dialog for Delete -->
     <script>
+        let currentRoomId = null;
+
         function confirmDelete() {
             return confirm('Apakah Anda yakin ingin menghapus kamar ini?');
         }
@@ -212,5 +226,91 @@
                 rows[i].style.display = match ? '' : 'none';
             }
         }
+
+
+        function updateStatus(roomId, status) {
+            fetch(`/admin/rooms/${roomId}/change-status`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({
+                        status_222320: status
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update status badge
+                        const badge = document.getElementById(`status-badge-${roomId}`);
+                        badge.textContent = status;
+
+                        // Update badge color
+                        badge.className = 'text-xs font-medium px-2.5 py-0.5 rounded-full ';
+                        if (status === 'available') {
+                            badge.className += 'bg-green-100 text-green-800';
+                        } else if (status === 'booked') {
+                            badge.className += 'bg-red-100 text-red-800';
+                        } else {
+                            badge.className += 'bg-yellow-100 text-yellow-800';
+                        }
+
+                        showToast('Status updated successfully', 'success');
+                    } else {
+                        // Revert select to previous value
+                        const select = document.getElementById(`status-${roomId}`);
+                        const badge = document.getElementById(`status-badge-${roomId}`);
+                        select.value = badge.textContent;
+                        showToast(data.message || 'Failed to update status', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Revert select to previous value
+                    const select = document.getElementById(`status-${roomId}`);
+                    const badge = document.getElementById(`status-badge-${roomId}`);
+                    select.value = badge.textContent;
+                    showToast('An error occurred while updating status', 'error');
+                });
+        }
+
+        // Toast Notification Function
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+
+            toastMessage.textContent = message;
+
+            // Update toast color based on type
+            const toastContainer = toast.querySelector('div');
+            if (type === 'error') {
+                toastContainer.className = 'bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg';
+            } else {
+                toastContainer.className = 'bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg';
+            }
+
+            toast.classList.remove('hidden');
+
+            // Auto hide after 3 seconds
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('stockModal');
+            if (event.target === modal) {
+                closeStockModal();
+            }
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeStockModal();
+            }
+        });
     </script>
 @endsection
