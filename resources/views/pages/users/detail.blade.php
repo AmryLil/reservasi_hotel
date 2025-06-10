@@ -7,6 +7,29 @@
 @section('content')
     <section class="py-12 bg-blue-50">
         <div class="container mx-auto px-4">
+            <!-- Alert Messages -->
+            @if (session('success'))
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4" role="alert">
+                    <span class="block sm:inline">{{ session('success') }}</span>
+                </div>
+            @endif
+
+            @if (session('error'))
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
+                    <span class="block sm:inline">{{ session('error') }}</span>
+                </div>
+            @endif
+
+            @if ($errors->any())
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
+                    <ul class="list-disc list-inside">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <div class="bg-white rounded-lg shadow-md overflow-hidden border border-blue-200">
                 <!-- Breadcrumb -->
                 <div class="px-6 py-3 bg-gray-50 border-b border-blue-100">
@@ -14,7 +37,6 @@
                         <ol class="inline-flex items-center space-x-1 md:space-x-3">
                             <li class="inline-flex items-center">
                                 <a href="{{ url('/') }}" class="text-blue-700 hover:text-blue-900">
-
                                     Home
                                 </a>
                             </li>
@@ -48,27 +70,18 @@
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-0">
                     <!-- Room Image -->
                     <div class="lg:col-span-2 relative">
-                        <img src="{{ asset('storage/' . $room->gambar_222320 ?: 'images/room.jpg') }}"
-                            alt="{{ $room->nama_kamar_222320 }}" class="w-full h-full object-cover">
+                        <img src="{{ asset('storage/' . $room->gambar_222320) }}" alt="{{ $room->nama_kamar_222320 }}"
+                            class="w-full h-96 lg:h-full object-cover">
                         <div class="absolute top-4 left-4">
                             <span class="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded">
-                                {{ $room->tipeRoom->nama_kamar_222320 }}
+                                {{ $room->tipeRoom->nama_tipe_222320 }}
                             </span>
                         </div>
-                        @if ($room->diskon_222320 > 0)
-                            <div class="absolute top-4 right-4">
-                                <span class="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded">
-                                    DISKON {{ $room->diskon_222320 }}%
-                                </span>
-                            </div>
-                        @endif
                     </div>
 
                     <!-- Room Details -->
                     <div class="p-6 border-l border-blue-100">
                         <h1 class="text-2xl font-bold text-blue-800">{{ $room->nama_kamar_222320 }}</h1>
-
-
 
                         <div class="mt-4 flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" viewBox="0 0 20 20"
@@ -83,14 +96,7 @@
                             <div class="flex justify-between text-xl font-semibold">
                                 <span>Harga per malam</span>
                                 <div class="text-blue-700">
-                                    @if ($room->diskon_222320 > 0)
-                                        <span class="line-through text-gray-500 text-base mr-2">Rp
-                                            {{ number_format($room->tipeRoom->harga_222320, 0, ',', '.') }}</span>
-                                        Rp
-                                        {{ number_format(($room->tipeRoom->harga_222320 * (100 - $room->diskon_222320)) / 100, 0, ',', '.') }}
-                                    @else
-                                        Rp {{ number_format($room->tipeRoom->harga_222320, 0, ',', '.') }}
-                                    @endif
+                                    Rp {{ number_format($room->tipeRoom->harga_222320, 0, ',', '.') }}
                                 </div>
                             </div>
                         </div>
@@ -104,10 +110,17 @@
                         </div>
 
                         @if ($room->status_222320 == 'available')
-                            <button id="reservasi-btn" data-room-id="{{ $room->id_room_222320 }}"
-                                class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-md font-medium transition duration-300 ease-in-out">
-                                Reservasi Sekarang
-                            </button>
+                            @auth
+                                <button id="reservasi-btn" data-room-id="{{ $room->id_room_222320 }}"
+                                    class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-md font-medium transition duration-300 ease-in-out">
+                                    Reservasi Sekarang
+                                </button>
+                            @else
+                                <a href="{{ route('login') }}"
+                                    class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-md font-medium transition duration-300 ease-in-out block text-center">
+                                    Login untuk Reservasi
+                                </a>
+                            @endauth
                         @else
                             <button disabled
                                 class="w-full bg-gray-400 text-white py-3 rounded-md font-medium cursor-not-allowed">
@@ -121,22 +134,23 @@
                 <div class="p-6 border-t border-blue-100">
                     <h2 class="text-xl font-semibold text-blue-800 mb-4">Deskripsi Kamar</h2>
                     <p class="text-gray-700 leading-relaxed">
-                        {{ $room->tipeRoom->deskripsi_222320 }}
+                        {{ $room->tipeRoom->deskripsi_222320 ?? 'Kamar nyaman dengan fasilitas lengkap untuk kenyamanan Anda.' }}
                     </p>
 
                     <div class="mt-8">
                         <h3 class="text-lg font-semibold text-blue-700 mb-3">Fasilitas Kamar</h3>
                         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                            <!-- Dummy facilities - in a real application, these would come from a relation -->
                             @php
                                 $facilities = [
                                     'Free Wi-Fi',
                                     'AC',
                                     'TV LED 42"',
                                     'Kamar Mandi Dalam',
-                                    'Pembuat Kopi',
+                                    'Pembuat Kopi/Teh',
                                     'Brankas',
                                     'Kulkas Mini',
+                                    'Handuk & Amenities',
+                                    'Meja Kerja',
                                 ];
                             @endphp
 
@@ -157,120 +171,149 @@
             </div>
 
             <!-- Related Rooms -->
-            <div class="mt-12">
-                <h2 class="text-2xl font-semibold text-blue-800 mb-6">Kamar Lainnya</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    @foreach (\App\Models\Room::where('id_room_222320', '!=', $room->id_room_222320)->where('status_222320', 'available')->take(3)->get() as $relatedRoom)
-                        <div class="bg-white shadow-md rounded-lg overflow-hidden border border-blue-200">
-                            <div class="relative">
-                                <span
-                                    class="absolute top-2 left-2 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded">
-                                    {{ $relatedRoom->tipeRoom->nama_tipe_222320 }}
-                                </span>
-                                <img src="{{ asset('storage/' . $relatedRoom->gambar_222320 ?: 'images/room.jpg') }}"
-                                    alt="{{ $relatedRoom->nama_kamar_222320 }}" class="w-full h-48 object-cover">
-                            </div>
-                            <div class="p-4">
-                                <h3 class="text-blue-800 font-semibold text-lg">{{ $relatedRoom->nama_kamar_222320 }}</h3>
+            @php
+                $relatedRooms = \App\Models\Room::with('tipeRoom')
+                    ->where('id_room_222320', '!=', $room->id_room_222320)
+                    ->where('status_222320', 'tersedia')
+                    ->take(3)
+                    ->get();
+            @endphp
 
-                                <div class="flex justify-between items-center mt-4">
-                                    <p class="text-blue-700 font-bold">Rp
-                                        {{ number_format($relatedRoom->tipeRoom->harga_222320, 0, ',', '.') }}</p>
-                                    <a href="{{ route('user.rooms.show', $relatedRoom->id_room_222320) }}"
-                                        class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded transition duration-200">
-                                        Detail
-                                    </a>
+            @if ($relatedRooms->count() > 0)
+                <div class="mt-12">
+                    <h2 class="text-2xl font-semibold text-blue-800 mb-6">Kamar Lainnya</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        @foreach ($relatedRooms as $relatedRoom)
+                            <div class="bg-white shadow-md rounded-lg overflow-hidden border border-blue-200">
+                                <div class="relative">
+                                    <span
+                                        class="absolute top-2 left-2 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded z-10">
+                                        {{ $relatedRoom->tipeRoom->nama_tipe_222320 }}
+                                    </span>
+                                    <img src="{{ $relatedRoom->gambar_222320 ? asset('storage/' . $relatedRoom->gambar_222320) : asset('images/default-room.jpg') }}"
+                                        alt="{{ $relatedRoom->nama_kamar_222320 }}" class="w-full h-48 object-cover"
+                                        onerror="this.src='{{ asset('images/default-room.jpg') }}'">
+                                </div>
+                                <div class="p-4">
+                                    <h3 class="text-blue-800 font-semibold text-lg mb-2">
+                                        {{ $relatedRoom->nama_kamar_222320 }}</h3>
+                                    <p class="text-gray-600 text-sm mb-3">
+                                        {{ Str::limit($relatedRoom->tipeRoom->deskripsi_222320, 80) }}</p>
+
+                                    <div class="flex justify-between items-center">
+                                        <p class="text-blue-700 font-bold">Rp
+                                            {{ number_format($relatedRoom->tipeRoom->harga_222320, 0, ',', '.') }}</p>
+                                        <a href="{{ route('reservasi.create', $relatedRoom->id_room_222320) }}"
+                                            class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition duration-200">
+                                            Detail
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    @endforeach
+                        @endforeach
+                    </div>
                 </div>
-            </div>
+            @endif
         </div>
 
         <!-- Reservation Modal -->
-        <dialog id="reservation-modal"
-            class="modal p-0 rounded-lg shadow-xl w-full max-w-md mx-auto opacity-0 transform scale-95 transition-all duration-300">
-            <div class="bg-blue-700 py-3 px-4">
-                <h3 class="text-lg font-bold text-white">Reservasi Kamar - {{ $room->nama_kamar_222320 }}</h3>
-            </div>
-            <div class="p-6 bg-white">
-                <form id="reservation-form" action="#" method="POST" class="space-y-4">
-                    @csrf
-                    <input type="hidden" name="room_id" value="{{ $room->id_room_222320 }}">
+        @auth
+            <dialog id="reservation-modal"
+                class="modal p-0 rounded-lg shadow-xl w-full max-w-2xl mx-auto opacity-0 transform scale-95 transition-all duration-300 backdrop:bg-black backdrop:bg-opacity-50">
+                <div class="bg-blue-700 py-4 px-6 flex justify-between items-center">
+                    <h3 class="text-xl font-bold text-white">Reservasi Kamar - {{ $room->nama_kamar_222320 }}</h3>
+                    <button type="button" id="close-modal-header" class="text-white hover:text-gray-200">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                            </path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="p-6 bg-white max-h-96 overflow-y-auto">
+                    <form id="reservation-form" action="{{ route('reservasi.store') }}" method="POST" class="space-y-4">
+                        @csrf
+                        <input type="hidden" name="id_room_222320" value="{{ $room->id_room_222320 }}">
 
-                    <div>
-                        <label class="block text-blue-700 font-medium mb-1">Nama Lengkap</label>
-                        <input type="text" name="nama"
-                            class="w-full p-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required>
-                    </div>
-                    <div>
-                        <label class="block text-blue-700 font-medium mb-1">Email</label>
-                        <input type="email" name="email"
-                            class="w-full p-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required>
-                    </div>
-                    <div>
-                        <label class="block text-blue-700 font-medium mb-1">No. Telepon</label>
-                        <input type="tel" name="telepon"
-                            class="w-full p-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-blue-700 font-medium mb-1">Check-in</label>
-                            <input type="date" name="check_in" min="{{ date('Y-m-d') }}"
-                                class="w-full p-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                required>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-blue-700 font-medium mb-2">Tanggal Check-in</label>
+                                <input type="date" name="tanggal_checkin_222320" id="checkin_date"
+                                    min="{{ date('Y-m-d') }}"
+                                    class="w-full p-3 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    required>
+                            </div>
+                            <div>
+                                <label class="block text-blue-700 font-medium mb-2">Tanggal Check-out</label>
+                                <input type="date" name="tanggal_checkout_222320" id="checkout_date"
+                                    min="{{ date('Y-m-d', strtotime('+1 day')) }}"
+                                    class="w-full p-3 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    required>
+                            </div>
                         </div>
+
                         <div>
-                            <label class="block text-blue-700 font-medium mb-1">Check-out</label>
-                            <input type="date" name="check_out" min="{{ date('Y-m-d', strtotime('+1 day')) }}"
-                                class="w-full p-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            <label class="block text-blue-700 font-medium mb-2">Jumlah Tamu</label>
+                            <select name="jumlah_tamu_222320"
+                                class="w-full p-3 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 required>
+                                <option value="">Pilih Jumlah Tamu</option>
+                                @for ($i = 1; $i <= 4; $i++)
+                                    <option value="{{ $i }}">{{ $i }} Orang</option>
+                                @endfor
+                            </select>
                         </div>
-                    </div>
-                    <div>
-                        <label class="block text-blue-700 font-medium mb-1">Jumlah Tamu</label>
-                        <input type="number" name="jumlah_tamu" min="1" max="{{ $room->kapasitas_222320 }}"
-                            class="w-full p-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required>
-                    </div>
-                    <div>
-                        <label class="block text-blue-700 font-medium mb-1">Catatan Tambahan</label>
-                        <textarea name="catatan"
-                            class="w-full p-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 h-24"></textarea>
-                    </div>
-                    <div class="flex space-x-3 justify-end pt-4">
-                        <button type="button" id="close-modal"
-                            class="px-4 py-2 border border-blue-500 text-blue-500 rounded-md hover:bg-blue-50">
-                            Batal
-                        </button>
-                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                            Konfirmasi Reservasi
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </dialog>
+
+                        <div>
+                            <label class="block text-blue-700 font-medium mb-2">Catatan Tambahan (Opsional)</label>
+                            <textarea name="catatan_222320" rows="3"
+                                class="w-full p-3 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="Permintaan khusus atau catatan untuk reservasi Anda..."></textarea>
+                        </div>
+
+                        <!-- Price Display -->
+                        <div id="price-display" class="hidden">
+                            <div class="p-4 rounded-md border bg-blue-50">
+                                <div id="price-calculation" class="font-semibold text-blue-700"></div>
+                            </div>
+                        </div>
+
+                        <div class="flex space-x-3 justify-end pt-4 border-t">
+                            <button type="button" id="close-modal"
+                                class="px-6 py-2 border border-blue-500 text-blue-500 rounded-md hover:bg-blue-50 transition">
+                                Batal
+                            </button>
+                            <button type="submit" id="submit-reservation"
+                                class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
+                                Konfirmasi Reservasi
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </dialog>
+        @endauth
     </section>
 @endsection
 
 @section('scripts')
     <style>
-        /* Animasi Modal */
+        /* Modal animations */
         .modal[open] {
             opacity: 1 !important;
             transform: scale(1) !important;
         }
+
+        dialog::backdrop {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
     </style>
+
     <script>
-        // Modal Toggle Function
+        // Modal management
         function toggleReservationModal(show = true) {
             const modal = document.getElementById('reservation-modal');
             if (show) {
                 modal.showModal();
+                document.body.style.overflow = 'hidden';
                 setTimeout(() => {
                     modal.classList.add('opacity-100', 'scale-100');
                     modal.classList.remove('opacity-0', 'scale-95');
@@ -278,43 +321,82 @@
             } else {
                 modal.classList.remove('opacity-100', 'scale-100');
                 modal.classList.add('opacity-0', 'scale-95');
+                document.body.style.overflow = 'auto';
                 setTimeout(() => modal.close(), 300);
             }
         }
 
-        // Check if user is logged in
-        function isUserLoggedIn() {
-            return {{ auth()->check() ? 'true' : 'false' }};
+        // Price calculation
+        function calculatePrice() {
+            const checkinDate = document.getElementById('checkin_date').value;
+            const checkoutDate = document.getElementById('checkout_date').value;
+            const basePrice = {{ $room->tipeRoom->harga_222320 }};
+
+            if (checkinDate && checkoutDate) {
+                const checkin = new Date(checkinDate);
+                const checkout = new Date(checkoutDate);
+                const timeDiff = checkout.getTime() - checkin.getTime();
+                const dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+                if (dayDiff > 0) {
+                    const totalPrice = dayDiff * basePrice;
+                    document.getElementById('price-calculation').innerHTML =
+                        `<strong>Durasi:</strong> ${dayDiff} malam<br>
+                         <strong>Total Harga:</strong> Rp ${totalPrice.toLocaleString('id-ID')}`;
+                    document.getElementById('price-display').classList.remove('hidden');
+                    return true;
+                } else {
+                    document.getElementById('price-display').classList.add('hidden');
+                }
+            } else {
+                document.getElementById('price-display').classList.add('hidden');
+            }
+            return false;
         }
 
+        // Event listeners
         document.addEventListener('DOMContentLoaded', function() {
-            // Setup reservasi button
-            document.querySelector('#reservasi-btn')?.addEventListener('click', function() {
-                if (!isUserLoggedIn()) {
-                    window.location.href = "{{ route('login') }}";
-                    return;
-                }
-
-                const roomId = this.dataset.roomId;
+            // Reservation button
+            document.getElementById('reservasi-btn')?.addEventListener('click', function() {
                 toggleReservationModal(true);
             });
 
-            // Setup modal close button
-            document.getElementById('close-modal')?.addEventListener('click', function() {
-                toggleReservationModal(false);
-            });
+            // Close modal buttons
+            document.getElementById('close-modal')?.addEventListener('click', () => toggleReservationModal(false));
+            document.getElementById('close-modal-header')?.addEventListener('click', () => toggleReservationModal(
+                false));
 
-            // Close modal when clicking outside
-            const modal = document.getElementById('reservation-modal');
-            modal?.addEventListener('click', function(event) {
-                if (event.target === modal) {
+            // Close modal when clicking backdrop
+            document.getElementById('reservation-modal')?.addEventListener('click', function(event) {
+                if (event.target === this) {
                     toggleReservationModal(false);
                 }
             });
 
-            // Handle form submission
-            document.getElementById('reservation-form')?.addEventListener('submit', function(event) {
-                // Form will submit normally to the specified action
+            // Date change handlers
+            document.getElementById('checkin_date')?.addEventListener('change', function() {
+                const checkoutInput = document.getElementById('checkout_date');
+                const checkinDate = new Date(this.value);
+                const nextDay = new Date(checkinDate);
+                nextDay.setDate(nextDay.getDate() + 1);
+
+                checkoutInput.min = nextDay.toISOString().split('T')[0];
+                if (checkoutInput.value && new Date(checkoutInput.value) <= checkinDate) {
+                    checkoutInput.value = '';
+                }
+
+                calculatePrice();
+            });
+
+            document.getElementById('checkout_date')?.addEventListener('change', function() {
+                calculatePrice();
+            });
+
+            // Form submission with loading state
+            document.getElementById('reservation-form')?.addEventListener('submit', function() {
+                const submitBtn = document.getElementById('submit-reservation');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Memproses...';
             });
         });
     </script>

@@ -17,7 +17,7 @@
                     class="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform {{ Request::is('/') ? 'scale-x-100' : '' }}"></span>
             </a>
 
-            <a href="#"
+            <a href="{{ route('user.rooms.index') }}"
                 class="relative group px-4 py-2 {{ Request::is('rooms') ? 'text-blue-600 font-medium' : 'text-gray-700' }}">
                 Kamar
                 <span
@@ -118,14 +118,14 @@
                                 <span class="font-medium text-gray-700">Profile Saya</span>
                             </a>
 
-                            <a href="#"
+                            <a href="{{ route('reservasi.user') }}"
                                 class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-100 mb-1">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none"
                                     viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                <span class="font-medium text-gray-700">Riwayat Transaksi</span>
+                                <span class="font-medium text-gray-700">Reservasi Saya</span>
                             </a>
 
                             <div class="border-t border-gray-200 my-4"></div>
