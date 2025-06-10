@@ -21,7 +21,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Added Iconify for better icons -->
     <script src="https://cdn.jsdelivr.net/npm/iconify-icon@1.0.7/dist/iconify-icon.min.js"></script>
-    <title>Terra Shop Dashboard</title>
+    <title>Reservasi Hotel Dashboard</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         :root {
@@ -144,7 +144,7 @@
                             class="bg-gradient-to-r from-indigo-500 to-purple-600 w-10 h-10 rounded-lg flex items-center justify-center shadow-lg">
                             <span class="text-white font-bold text-xl">T</span>
                         </div>
-                        <span class="text-xl font-bold text-gray-800 dark:text-white">Terra Shop</span>
+                        <span class="text-xl font-bold text-gray-800 dark:text-white">Reservasi Hotel</span>
                     </div>
                 </div>
 
@@ -215,8 +215,10 @@
                                     <span class="font-semibold text-sm">A</span>
                                 </div>
                                 <div class="hidden md:flex flex-col items-start">
-                                    <p class="text-sm font-semibold text-gray-800 dark:text-white">Admin User</p>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">admin@terrashop.com</p>
+                                    <p class="text-sm font-semibold text-gray-800 dark:text-white">
+                                        {{ Auth::user()->nama_222320 }}</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ Auth::user()->email_222320 }}
+                                    </p>
                                 </div>
                                 <!-- Dropdown arrow with animation -->
                                 <svg class="w-5 h-5 text-gray-500 dark:text-gray-400 transition-transform duration-200"
@@ -266,7 +268,7 @@
                 <div class="container mx-auto">
                     <div class="flex flex-col md:flex-row justify-between items-center">
                         <div class="mb-4 md:mb-0">
-                            <p class="text-sm text-gray-600 dark:text-gray-400">&copy; 2025 Terra Shop. All rights
+                            <p class="text-sm text-gray-600 dark:text-gray-400">&copy; 2025 ReservasiHotel. All rights
                                 reserved.</p>
                         </div>
                         <div class="flex space-x-6">

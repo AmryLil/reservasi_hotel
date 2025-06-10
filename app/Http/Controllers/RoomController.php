@@ -42,11 +42,23 @@ class RoomController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'id_room_222320'    => 'required|string|max:255',
+            'id_room_222320'    => 'required|string|max:255|unique:room_222320,id_room_222320',
             'nama_kamar_222320' => 'required|string|max:255',
             'gambar_222320'     => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'status_222320'     => 'required|string|in:available,booked,maintenance',
             'tipe_id_222320'    => 'required|exists:tiperoom_222320,tipe_id_222320',
+        ], [
+            'id_room_222320.unique'      => 'ID Kamar sudah digunakan. Silakan gunakan ID yang berbeda.',
+            'id_room_222320.required'    => 'ID Kamar wajib diisi.',
+            'nama_kamar_222320.required' => 'Nama kamar wajib diisi.',
+            'gambar_222320.required'     => 'Gambar kamar wajib diupload.',
+            'gambar_222320.image'        => 'File harus berupa gambar.',
+            'gambar_222320.mimes'        => 'Gambar harus berformat jpeg, png, jpg, atau gif.',
+            'gambar_222320.max'          => 'Ukuran gambar maksimal 2MB.',
+            'status_222320.required'     => 'Status kamar wajib dipilih.',
+            'status_222320.in'           => 'Status kamar harus available, booked, atau maintenance.',
+            'tipe_id_222320.required'    => 'Tipe kamar wajib dipilih.',
+            'tipe_id_222320.exists'      => 'Tipe kamar yang dipilih tidak valid.',
         ]);
 
         if ($validator->fails()) {
