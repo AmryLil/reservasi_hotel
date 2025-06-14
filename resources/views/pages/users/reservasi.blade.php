@@ -61,7 +61,7 @@
                     </div>
                     <h3 class="text-xl font-semibold text-gray-700 mb-2">Belum Ada Reservasi</h3>
                     <p class="text-gray-500 mb-6">Anda belum memiliki reservasi apapun saat ini</p>
-                    <a href="{{ route('rooms.index') }}"
+                    <a href="{{ route('user.rooms.index') }}"
                         class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -88,15 +88,15 @@
                                         <div class="text-2xl font-bold">
                                             Rp{{ number_format($booking->total_harga_222320, 0, ',', '.') }}
                                         </div>
-                                        {{-- <span
+                                        <span
                                             class="inline-block px-3 py-1 rounded-full text-sm font-medium bg-white bg-opacity-20 backdrop-blur-sm mt-2
-                                            @if ($booking->status_222320 === 'menunggu_konfirmasi') text-yellow-200
-                                            @elseif($booking->status_222320 === 'dikonfirmasi') text-blue-200
-                                            @elseif($booking->status_222320 === 'checkin') text-green-200
-                                            @elseif($booking->status_222320 === 'checkout') text-gray-200
-                                            @else text-red-200 @endif">
+                                            @if ($booking->status_222320 === 'menunggu_konfirmasi') text-black
+                                            @elseif($booking->status_222320 === 'dikonfirmasi') text-black
+                                            @elseif($booking->status_222320 === 'checkin') text-black
+                                            @elseif($booking->status_222320 === 'checkout') text-black
+                                            @else text-black @endif">
                                             {{ ucfirst(str_replace('_', ' ', $booking->status_222320)) }}
-                                        </span> --}}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -142,12 +142,7 @@
                                                             <span
                                                                 class="font-medium text-green-600">Rp{{ number_format($booking->room->tipeRoom->harga_222320, 0, ',', '.') }}</span>
                                                         </div>
-                                                        <div class="flex justify-between">
-                                                            <span class="text-gray-600">Kapasitas:</span>
-                                                            <span
-                                                                class="font-medium">{{ $booking->room->tipeRoom->kapasitas_222320 }}
-                                                                orang</span>
-                                                        </div>
+
                                                     </div>
                                                 @endif
                                             </div>
@@ -314,40 +309,39 @@
 
                                                 <!-- Payment Modal -->
                                                 <div x-show="openModal"
-                                                    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-                                                    x-cloak>
+                                                    class="fixed inset-0 flex items-center justify-center z-50"
+                                                    style="background-color: rgba(0, 0, 0, 0.3);" x-cloak>
                                                     <div @click.outside="openModal = false"
-                                                        class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
+                                                        class="bg-white rounded-lg shadow-xl w-full max-w-xs mx-4 overflow-hidden">
                                                         <!-- Modal Header -->
                                                         <div
-                                                            class="bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white">
-                                                            <h2 class="text-xl font-bold">Upload Bukti Pembayaran QRIS</h2>
+                                                            class="bg-gradient-to-r from-blue-600 to-purple-600 p-3 text-white">
+                                                            <h2 class="text-sm font-bold">Upload Bukti Pembayaran QRIS</h2>
                                                         </div>
 
-                                                        <div class="p-6">
+                                                        <div class="p-3">
                                                             <!-- Booking Summary -->
-                                                            <div class="bg-gray-50 p-4 rounded-lg mb-6">
-                                                                <div class="flex justify-between items-center mb-2">
-                                                                    <span class="text-sm text-gray-600">ID Booking:</span>
+                                                            <div class="bg-gray-50 p-2 rounded-md mb-3">
+                                                                <div class="flex justify-between items-center mb-1">
+                                                                    <span class="text-xs text-gray-600">ID Booking:</span>
                                                                     <span
-                                                                        class="font-semibold">{{ $booking->id_booking_222320 }}</span>
+                                                                        class="text-xs font-semibold">{{ $booking->id_booking_222320 }}</span>
                                                                 </div>
                                                                 <div class="flex justify-between items-center">
-                                                                    <span class="text-sm text-gray-600">Total Bayar:</span>
-                                                                    <span class="text-xl font-bold text-green-600">
+                                                                    <span class="text-xs text-gray-600">Total Bayar:</span>
+                                                                    <span class="text-sm font-bold text-green-600">
                                                                         Rp{{ number_format($booking->total_harga_222320, 0, ',', '.') }}
                                                                     </span>
                                                                 </div>
                                                             </div>
 
                                                             <!-- QRIS Code -->
-                                                            <div class="text-center mb-6">
-                                                                <p class="text-sm text-gray-600 mb-4">Scan QR Code untuk
-                                                                    pembayaran:</p>
+                                                            <div class="text-center mb-3">
+                                                                <p class="text-xs text-gray-600 mb-2">Scan QR Code:</p>
                                                                 <div
-                                                                    class="bg-white p-4 rounded-lg border-2 border-dashed border-gray-300 inline-block">
+                                                                    class="bg-white p-2 rounded border border-gray-300 inline-block">
                                                                     <img src="{{ asset('images/qris.png') }}"
-                                                                        alt="QRIS" class="w-32 h-32 mx-auto">
+                                                                        alt="QRIS" class="w-20 h-20 mx-auto">
                                                                 </div>
                                                             </div>
 
@@ -358,42 +352,43 @@
                                                                 <input type="hidden" name="id_booking_222320"
                                                                     value="{{ $booking->id_booking_222320 }}">
 
-                                                                <div class="mb-4">
-                                                                    <label class="block mb-2 font-medium text-gray-700">
+                                                                <div class="mb-2">
+                                                                    <label
+                                                                        class="block mb-1 text-xs font-medium text-gray-700">
                                                                         Bukti Pembayaran <span
                                                                             class="text-red-500">*</span>
                                                                     </label>
                                                                     <input type="file" name="bukti_pembayaran_222320"
-                                                                        class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                                        class="w-full border border-gray-300 p-2 rounded text-xs focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                                                                         accept="image/*" required>
-                                                                    <p class="text-xs text-gray-500 mt-1">Format: JPG,
-                                                                        JPEG, PNG. Maksimal 2MB</p>
+                                                                    <p class="text-xs text-gray-500 mt-1">JPG, PNG. Max 2MB
+                                                                    </p>
                                                                 </div>
 
-                                                                <div class="mb-6">
+                                                                <div class="mb-3">
                                                                     <label
-                                                                        class="block mb-2 font-medium text-gray-700">Keterangan
+                                                                        class="block mb-1 text-xs font-medium text-gray-700">Keterangan
                                                                         (opsional)
                                                                     </label>
-                                                                    <textarea name="keterangan_222320" rows="3"
-                                                                        class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                                                        placeholder="Catatan tambahan..."></textarea>
+                                                                    <textarea name="keterangan_222320" rows="2"
+                                                                        class="w-full border border-gray-300 p-2 rounded text-xs focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                                                                        placeholder="Catatan..."></textarea>
                                                                 </div>
 
-                                                                <div class="flex space-x-3">
+                                                                <div class="flex space-x-2">
                                                                     <button type="button" @click="openModal = false"
-                                                                        class="flex-1 px-4 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 font-medium">
+                                                                        class="flex-1 px-3 py-2 bg-gray-300 text-gray-700 rounded text-xs hover:bg-gray-400 font-medium">
                                                                         Batal
                                                                     </button>
                                                                     <button type="submit"
-                                                                        class="flex-1 px-4 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 font-medium flex items-center justify-center">
-                                                                        <svg class="w-4 h-4 mr-2" fill="none"
+                                                                        class="flex-1 px-3 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded text-xs hover:from-green-600 hover:to-green-700 font-medium flex items-center justify-center">
+                                                                        <svg class="w-3 h-3 mr-1" fill="none"
                                                                             stroke="currentColor" viewBox="0 0 24 24">
                                                                             <path stroke-linecap="round"
                                                                                 stroke-linejoin="round" stroke-width="2"
                                                                                 d="M5 13l4 4L19 7"></path>
                                                                         </svg>
-                                                                        Kirim Pembayaran
+                                                                        Kirim
                                                                     </button>
                                                                 </div>
                                                             </form>

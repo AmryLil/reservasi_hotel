@@ -42,9 +42,9 @@ class UserController extends Controller
     $request->validate([
       'nama_222320'     => 'required|string|max:255',
       'email_222320'    => 'required|string|email|max:255|unique:users_222320,email_222320',
-      'phone_222320'    => 'required|string|max:15',
-      'alamat_222320'   => 'required|string',
-      'gender_222320'   => 'required|in:male,female',
+      'phone_222320'    => 'nullable|string|max:15',
+      'alamat_222320'   => 'nullable|string',
+      'gender_222320'   => 'nullable|in:L,P',
       'password_222320' => 'required|string|min:8|confirmed',
       'role_222320'     => 'required|in:admin,user',
     ]);
@@ -61,7 +61,7 @@ class UserController extends Controller
     ]);
 
     return redirect()
-      ->route('users.index')
+      ->route('admin.users.index')
       ->with('success', 'User created successfully.');
   }
 
@@ -98,9 +98,9 @@ class UserController extends Controller
   {
     $rules = [
       'nama_222320'   => 'required|string|max:255',
-      'phone_222320'  => 'required|string|max:15',
-      'alamat_222320' => 'required|string',
-      'gender_222320' => 'required|in:male,female',
+      'phone_222320'  => 'nullable|string|max:15',
+      'alamat_222320' => 'nullable|string',
+      'gender_222320' => 'nullable|in:L,P',
       'role_222320'   => 'required|in:admin,user',
     ];
 
@@ -132,7 +132,7 @@ class UserController extends Controller
     $user->update($userData);
 
     return redirect()
-      ->route('users.index')
+      ->route('admin.users.index')
       ->with('success', 'User updated successfully');
   }
 
@@ -147,7 +147,7 @@ class UserController extends Controller
     $user->delete();
 
     return redirect()
-      ->route('users.index')
+      ->route('admin.users.index')
       ->with('success', 'User deleted successfully');
   }
 

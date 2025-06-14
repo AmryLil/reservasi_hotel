@@ -6,6 +6,7 @@ use App\Helpers\IdGenerator;
 use App\Models\Booking;
 use App\Models\Room;
 use App\Models\TipeRoom;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -52,7 +53,7 @@ class ReservasiController extends Controller
         $rooms     = $query->paginate(10);
         $tipeRooms = TipeRoom::all();
 
-        return view('reservasi.index', compact('rooms', 'tipeRooms'));
+        return view('pages.admin.reservasi.index', compact('rooms', 'tipeRooms'));
     }
 
     /**
@@ -78,7 +79,6 @@ class ReservasiController extends Controller
             'id_room_222320'          => 'required|exists:room_222320,id_room_222320',
             'tanggal_checkin_222320'  => 'required|date|after_or_equal:today',
             'tanggal_checkout_222320' => 'required|date|after:tanggal_checkin_222320',
-            'jumlah_tamu_222320'      => 'required|integer|min:1|max:10',
             'catatan_222320'          => 'nullable|string|max:500'
         ]);
 
@@ -123,7 +123,7 @@ class ReservasiController extends Controller
                 'id_room_222320'          => $request->id_room_222320,
                 'tanggal_checkin_222320'  => $request->tanggal_checkin_222320,
                 'tanggal_checkout_222320' => $request->tanggal_checkout_222320,
-                'jumlah_tamu_222320'      => $request->jumlah_tamu_222320,
+                'jumlah_tamu_222320'      => 3,
                 'total_harga_222320'      => $totalHarga,
                 'status_222320'           => 'menunggu_konfirmasi',
                 'catatan_222320'          => $request->catatan_222320,
@@ -161,7 +161,7 @@ class ReservasiController extends Controller
             abort(403);
         }
 
-        return view('reservasi.show', compact('booking'));
+        return view('pages.admin.reservasi.show', compact('booking'));
     }
 
     /**
@@ -181,21 +181,53 @@ class ReservasiController extends Controller
             $oldStatus = $booking->status_222320;
             $newStatus = $request->status;
 
-            $booking->update([
-                'status_222320'        => $newStatus,
-                'catatan_admin_222320' => $request->catatan_admin,
-                'updated_at'           => now()
-            ]);
+            // Jangan proses jika status tidak berubah
+            if ($oldStatus === $newStatus) {
+                return redirect()->back()->with('info', 'Status tidak berubah.');
+            }
 
-            // Update room status based on booking status
+            // === LOGIKA VALIDASI ALUR STATUS ===
+            if ($newStatus === 'checkin') {
+                if ($oldStatus !== 'dikonfirmasi') {
+                    throw new \Exception("Gagal. Status harus 'Dikonfirmasi' sebelum bisa diubah ke 'Check-in'.");
+                }
+                $today       = Carbon::today();
+                $checkinDate = Carbon::parse($booking->tanggal_checkin_222320);
+                if ($today->lt($checkinDate)) {
+                    throw new \Exception('Gagal. Belum waktunya untuk check-in.');
+                }
+                $booking->waktu_checkin_222320 = now();
+            }
+
+            if ($newStatus === 'checkout') {
+                if ($oldStatus !== 'checkin') {
+                    throw new \Exception("Gagal. Status harus 'Check-in' sebelum bisa diubah ke 'Checkout'.");
+                }
+                $booking->waktu_checkout_222320 = now();
+            }
+
+            if ($newStatus === 'dibatalkan') {
+                if (in_array($oldStatus, ['checkin', 'checkout'])) {
+                    throw new \Exception('Reservasi yang sudah check-in atau checkout tidak dapat dibatalkan.');
+                }
+                $booking->tanggal_pembatalan_222320 = now();
+            }
+
+            // Update status utama
+            $booking->status_222320        = $newStatus;
+            $booking->catatan_admin_222320 = $request->catatan_admin;
+
+            $booking->save();
+
+            // Update status kamar berdasarkan status booking baru
             $this->updateRoomStatus($booking, $oldStatus, $newStatus);
 
             DB::commit();
 
-            return redirect()->back()->with('success', 'Status reservasi berhasil diupdate');
+            return redirect()->back()->with('success', 'Status reservasi berhasil diperbarui.');
         } catch (\Exception $e) {
             DB::rollback();
-            return redirect()->back()->with('error', 'Gagal mengupdate status: ' . $e->getMessage());
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 
@@ -292,7 +324,7 @@ class ReservasiController extends Controller
 
         $bookings = $query->orderBy('tanggal_booking_222320', 'desc')->paginate(15);
 
-        return view('admin.reservasi.index', compact('bookings'));
+        return view('pages.admin.reservasi.index', compact('bookings'));
     }
 
     /**
@@ -331,7 +363,7 @@ class ReservasiController extends Controller
             ->orderBy('month')
             ->get();
 
-        return view('admin.reservasi.statistik', compact('stats', 'monthlyBookings'));
+        return view('pages.admin.reservasi.statistik', compact('stats', 'monthlyBookings'));
     }
 
     /**
@@ -439,20 +471,27 @@ class ReservasiController extends Controller
     {
         $room = $booking->room;
 
+        if (!$room)
+            return;
+
         switch ($newStatus) {
             case 'dikonfirmasi':
-                if ($oldStatus === 'menunggu_konfirmasi') {
-                    $room->update(['status_222320' => 'booked']);
-                }
+                $room->update(['status_222320' => 'booked']);
                 break;
 
             case 'checkin':
-                $room->update(['status_222320' => 'booked']);
+                $room->update(['status_222320' => 'booked']);  // Menggunakan 'ditempati' agar konsisten
                 break;
 
             case 'checkout':
             case 'dibatalkan':
-                $room->update(['status_222320' => 'tersedia']);
+                // Hanya ubah ke 'tersedia' jika tidak ada booking lain yang aktif untuk kamar ini
+                $isStillBooked = Booking::where('id_room_222320', $room->id_room_222320)
+                    ->where('status_222320', 'in', ['dikonfirmasi', 'checkin'])
+                    ->exists();
+                if (!$isStillBooked) {
+                    $room->update(['status_222320' => 'available']);
+                }
                 break;
         }
     }
@@ -462,26 +501,66 @@ class ReservasiController extends Controller
      */
     public function laporan(Request $request)
     {
-        $request->validate([
-            'tanggal_mulai' => 'required|date',
-            'tanggal_akhir' => 'required|date|after_or_equal:tanggal_mulai',
-            'format'        => 'in:pdf,excel'
-        ]);
+        $showResults = true;
 
-        $bookings = Booking::with(['room.tipeRoom', 'user'])
-            ->whereBetween('tanggal_booking_222320', [
-                $request->tanggal_mulai,
-                $request->tanggal_akhir
-            ])
-            ->orderBy('tanggal_booking_222320', 'desc')
-            ->get();
+        // Jika ada request filter, lakukan validasi
+        if ($request->has('tanggal_mulai') && $request->has('tanggal_akhir')) {
+            $request->validate([
+                'tanggal_mulai' => 'required|date',
+                'tanggal_akhir' => 'required|date|after_or_equal:tanggal_mulai',
+                'format'        => 'nullable|in:pdf,excel'
+            ]);
 
-        if ($request->format === 'pdf') {
-            // Return PDF view
-            return view('admin.reservasi.laporan-pdf', compact('bookings', 'request'));
+            // Ambil data booking berdasarkan rentang tanggal
+            $bookings = Booking::with(['room.tipeRoom', 'user'])
+                ->whereBetween('tanggal_booking_222320', [
+                    $request->tanggal_mulai,
+                    $request->tanggal_akhir
+                ])
+                ->orderBy('tanggal_booking_222320', 'desc')
+                ->get();
         } else {
-            // Return Excel download
-            return view('admin.reservasi.laporan-excel', compact('bookings', 'request'));
+            // Default: tampilkan semua data
+            $bookings = Booking::with(['room.tipeRoom', 'user'])
+                ->orderBy('tanggal_booking_222320', 'desc')
+                ->get();
         }
+
+        // Jika ada request untuk download PDF
+        if ($request->has('format') && $request->format === 'pdf') {
+            return $this->generatePDF($bookings, $request);
+        }
+
+        // Jika ada request untuk download Excel
+        if ($request->has('format') && $request->format === 'excel') {
+            return view('pages.admin.reservasi.laporan-excel', compact('bookings', 'request'));
+        }
+
+        return view('pages.admin.laporan.laporan', compact('bookings', 'showResults'));
+    }
+
+    private function generatePDF($bookings, $request)
+    {
+        // Data untuk PDF
+        $data = [
+            'bookings'         => $bookings,
+            'tanggal_mulai'    => $request->tanggal_mulai,
+            'tanggal_akhir'    => $request->tanggal_akhir,
+            'total_reservasi'  => $bookings->count(),
+            'total_pendapatan' => $bookings->sum('total_harga_222320'),
+            'tanggal_cetak'    => now()->format('d F Y H:i:s')
+        ];
+
+        // Generate PDF
+        $pdf = Pdf::loadView('pages.admin.laporan.laporan-pdf', $data);
+
+        // Set paper size dan orientasi
+        $pdf->setPaper('A4', 'landscape');
+
+        // Nama file
+        $filename = 'laporan-reservasi-' . date('Y-m-d-H-i-s') . '.pdf';
+
+        // Download PDF
+        return $pdf->download($filename);
     }
 }

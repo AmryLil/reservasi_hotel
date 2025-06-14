@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryProductController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\NilaiController;
 use App\Http\Controllers\PaymentController;
@@ -55,6 +56,8 @@ Route::get('/signup', [AuthController::class, 'showRegistrationForm'])->name('si
 Route::post('/signup', [AuthController::class, 'register'])->name('signup');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+Route::get('/gallery', [GalleryController::class, 'indexUser'])->name('gallery.index');
+
 Route::middleware(['auth'])->group(function () {
     // User reservation routes
     Route::get('/reservasi', [ReservasiController::class, 'index'])->name('reservasi.index');  // Add this line
@@ -70,26 +73,28 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/pembayaran', [PembayaranController::class, 'store'])->name('pembayaran.store');
 });
 
-// Featured rooms (for homepage)
 Route::get('/featured-rooms', [App\Http\Controllers\UserRoomController::class, 'featured'])->name('user.rooms.featured');
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('tiperoom', TipeRoomController::class);
+    Route::resource('gallery', GalleryController::class);
     Route::resource('rooms', RoomController::class);
     Route::get('rooms/available', [RoomController::class, 'available'])->name('rooms.available');
     Route::post('rooms/{id}/change-status', [RoomController::class, 'changeStatus'])->name('rooms.changeStatus');
     Route::get('rooms/type/{typeId}', [RoomController::class, 'getByType'])->name('rooms.byType');
     Route::resource('users', UserController::class);
 
-    Route::get('/reservasi', [ReservasiController::class, 'adminIndex'])->name('admin.reservasi.index');
-    Route::get('/reservasi/statistik', [ReservasiController::class, 'statistik'])->name('admin.reservasi.statistik');
-    Route::get('/reservasi/laporan', [ReservasiController::class, 'laporan'])->name('admin.reservasi.laporan');
+    Route::get('/reservasi', [ReservasiController::class, 'adminIndex'])->name(name: 'reservasi.index');
+    Route::get('/reservasi/statistik', [ReservasiController::class, 'statistik'])->name('reservasi.statistik');
+    Route::get('/reservasi/laporan', [ReservasiController::class, 'laporan'])->name('reservasi.laporan');
+
+    Route::get('/reservasi/{id}', [ReservasiController::class, 'show'])->name('reservasi.show');
 
     // Status management
-    Route::patch('/reservasi/{id}/status', [ReservasiController::class, 'updateStatus'])->name('admin.reservasi.update-status');
+    Route::put('/reservasi/{id}/status', [ReservasiController::class, 'updateStatus'])->name('reservasi.updateStatus');
     Route::patch('/reservasi/{id}/checkin', [ReservasiController::class, 'checkin'])->name('admin.reservasi.checkin');
     Route::patch('/reservasi/{id}/checkout', [ReservasiController::class, 'checkout'])->name('admin.reservasi.checkout');
 
-    Route::get('/pembayaran', [PembayaranController::class, 'adminIndex'])->name('admin.pembayaran.index');
+    Route::get('/pembayaran', [PembayaranController::class, 'adminIndex'])->name('pembayaran.index');
 
     // Route untuk update status pembayaran (admin)
     Route::patch('/pembayaran/{id}/status', [PembayaranController::class, 'updateStatus'])->name('admin.pembayaran.update-status');

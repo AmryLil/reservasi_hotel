@@ -116,9 +116,7 @@
                                         Available</option>
                                     <option value="booked" {{ $room->status_222320 == 'booked' ? 'selected' : '' }}>
                                         Booked</option>
-                                    <option value="maintenance"
-                                        {{ $room->status_222320 == 'maintenance' ? 'selected' : '' }}>
-                                        Maintenance</option>
+
                                 </select>
 
                             </td>
@@ -228,7 +226,21 @@
         }
 
 
-        function updateStatus(roomId, status) {
+        function updateStatus(roomId, newStatus) {
+            const selectElement = document.getElementById(`status-${roomId}`);
+            // Store the original value from a data attribute, or find the initially selected option
+            let originalStatus = selectElement.dataset.originalStatus;
+
+            if (!originalStatus) {
+                for (let i = 0; i < selectElement.options.length; i++) {
+                    if (selectElement.options[i].defaultSelected) {
+                        originalStatus = selectElement.options[i].value;
+                        selectElement.dataset.originalStatus = originalStatus; // Store it for future changes
+                        break;
+                    }
+                }
+            }
+
             fetch(`/admin/rooms/${roomId}/change-status`, {
                     method: 'POST',
                     headers: {
@@ -236,45 +248,39 @@
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     },
                     body: JSON.stringify({
-                        status_222320: status
+                        status_222320: newStatus
                     })
                 })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        // If response is not ok, read the error message and throw an error
+                        return response.json().then(err => {
+                            throw err;
+                        });
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     if (data.success) {
-                        // Update status badge
-                        const badge = document.getElementById(`status-badge-${roomId}`);
-                        badge.textContent = status;
-
-                        // Update badge color
-                        badge.className = 'text-xs font-medium px-2.5 py-0.5 rounded-full ';
-                        if (status === 'available') {
-                            badge.className += 'bg-green-100 text-green-800';
-                        } else if (status === 'booked') {
-                            badge.className += 'bg-red-100 text-red-800';
-                        } else {
-                            badge.className += 'bg-yellow-100 text-yellow-800';
+                        // On success, update the 'defaultSelected' and 'originalStatus' to the new value
+                        for (let i = 0; i < selectElement.options.length; i++) {
+                            selectElement.options[i].defaultSelected = (selectElement.options[i].value === newStatus);
                         }
-
+                        selectElement.dataset.originalStatus = newStatus;
                         showToast('Status updated successfully', 'success');
                     } else {
-                        // Revert select to previous value
-                        const select = document.getElementById(`status-${roomId}`);
-                        const badge = document.getElementById(`status-badge-${roomId}`);
-                        select.value = badge.textContent;
+                        // Revert select to the original value if the server returns success: false
+                        selectElement.value = originalStatus;
                         showToast(data.message || 'Failed to update status', 'error');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    // Revert select to previous value
-                    const select = document.getElementById(`status-${roomId}`);
-                    const badge = document.getElementById(`status-badge-${roomId}`);
-                    select.value = badge.textContent;
-                    showToast('An error occurred while updating status', 'error');
+                    // Revert select to the original value on any fetch error
+                    selectElement.value = originalStatus;
+                    showToast(error.message || 'An error occurred while updating status', 'error');
                 });
         }
-
         // Toast Notification Function
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');

@@ -56,6 +56,39 @@
             <span class="font-medium">Tipe Kamar</span>
         </a>
 
+        <!-- Gallery -->
+        <a href="{{ route('admin.gallery.index') }}"
+            class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-blue-700/50 mb-1 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-300" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M3 4a1 1 0 011-1h16a1 1 0 011 1v16a1 1 0 01-1 1H4a1 1 0 01-1-1V4z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8h18M8 4v16M16 4v16" />
+            </svg>
+            <span class="font-medium">Gallery</span>
+        </a>
+
+        <!-- Reservasi -->
+        <a href="{{ route('admin.reservasi.index') }}"
+            class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-blue-700/50 mb-1 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-300" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2v-5H3v5a2 2 0 002 2z" />
+            </svg>
+            <span class="font-medium">Reservasi</span>
+        </a>
+
+        <!-- Laporan -->
+        <a href="{{ route('admin.reservasi.laporan') }}"
+            class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-blue-700/50 mb-1 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-300" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 17v-2a4 4 0 014-4h3m-3 0V7a4 4 0 00-8 0v4m4 8v1a3 3 0 01-3-3v-1m6 0h6" />
+            </svg>
+            <span class="font-medium">Laporan</span>
+        </a>
 
         <div class="border-t border-blue-700/50 my-6"></div>
 

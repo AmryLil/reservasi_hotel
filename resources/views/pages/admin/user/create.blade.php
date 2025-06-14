@@ -32,20 +32,17 @@
                 <div>
                     <label for="phone_222320" class="block font-semibold mb-1">Phone</label>
                     <input type="text" name="phone_222320" id="phone_222320" value="{{ old('phone_222320') }}"
-                        class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        required>
+                        class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div>
                     <label for="alamat_222320" class="block font-semibold mb-1">Alamat</label>
                     <input type="text" name="alamat_222320" id="alamat_222320" value="{{ old('alamat_222320') }}"
-                        class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        required>
+                        class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div>
                     <label for="gender_222320" class="block font-semibold mb-1">Gender</label>
                     <select name="gender_222320" id="gender_222320"
-                        class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        required>
+                        class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="">Pilih Gender</option>
                         <option value="male" {{ old('gender_222320') == 'male' ? 'selected' : '' }}>Male</option>
                         <option value="female" {{ old('gender_222320') == 'female' ? 'selected' : '' }}>Female</option>
