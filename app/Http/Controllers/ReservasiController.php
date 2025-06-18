@@ -501,66 +501,112 @@ class ReservasiController extends Controller
      */
     public function laporan(Request $request)
     {
-        $showResults = true;
-
-        // Jika ada request filter, lakukan validasi
-        if ($request->has('tanggal_mulai') && $request->has('tanggal_akhir')) {
+        // Validasi hanya dijalankan jika ada input filter
+        if ($request->has('filter_type')) {
             $request->validate([
-                'tanggal_mulai' => 'required|date',
-                'tanggal_akhir' => 'required|date|after_or_equal:tanggal_mulai',
+                'filter_type'   => 'in:harian,mingguan,bulanan,tahunan,custom',
+                'tanggal'       => 'nullable|required_if:filter_type,harian|date',
+                'minggu'        => 'nullable|required_if:filter_type,mingguan|date',
+                'bulan'         => 'nullable|required_if:filter_type,bulanan|integer|between:1,12',
+                'tahun_bulan'   => 'nullable|required_if:filter_type,bulanan|integer',
+                'tahun'         => 'nullable|required_if:filter_type,tahunan|integer',
+                'tanggal_mulai' => 'nullable|required_if:filter_type,custom|date',
+                'tanggal_akhir' => 'nullable|required_if:filter_type,custom|date|after_or_equal:tanggal_mulai',
                 'format'        => 'nullable|in:pdf,excel'
             ]);
-
-            // Ambil data booking berdasarkan rentang tanggal
-            $bookings = Booking::with(['room.tipeRoom', 'user'])
-                ->whereBetween('tanggal_booking_222320', [
-                    $request->tanggal_mulai,
-                    $request->tanggal_akhir
-                ])
-                ->orderBy('tanggal_booking_222320', 'desc')
-                ->get();
-        } else {
-            // Default: tampilkan semua data
-            $bookings = Booking::with(['room.tipeRoom', 'user'])
-                ->orderBy('tanggal_booking_222320', 'desc')
-                ->get();
         }
 
-        // Jika ada request untuk download PDF
-        if ($request->has('format') && $request->format === 'pdf') {
-            return $this->generatePDF($bookings, $request);
+        // Query dasar untuk booking
+        $bookingQuery = Booking::query();
+
+        // Terapkan filter HANYA JIKA ada request filter_type
+        if ($request->has('filter_type') && !empty($request->filter_type)) {
+            $filterType = $request->input('filter_type');
+            switch ($filterType) {
+                case 'harian':
+                    $bookingQuery->whereDate('tanggal_booking_222320', $request->tanggal);
+                    break;
+                case 'mingguan':
+                    $startOfWeek = Carbon::parse($request->minggu)->startOfWeek();
+                    $endOfWeek   = Carbon::parse($request->minggu)->endOfWeek();
+                    $bookingQuery->whereBetween('tanggal_booking_222320', [$startOfWeek, $endOfWeek]);
+                    break;
+                case 'bulanan':
+                    $bookingQuery
+                        ->whereMonth('tanggal_booking_222320', $request->bulan)
+                        ->whereYear('tanggal_booking_222320', $request->tahun_bulan);
+                    break;
+                case 'tahunan':
+                    $bookingQuery->whereYear('tanggal_booking_222320', $request->tahun);
+                    break;
+                case 'custom':
+                    if ($request->filled('tanggal_mulai') && $request->filled('tanggal_akhir')) {
+                        $bookingQuery->whereBetween('tanggal_booking_222320', [$request->tanggal_mulai, $request->tanggal_akhir]);
+                    }
+                    break;
+            }
         }
 
-        // Jika ada request untuk download Excel
-        if ($request->has('format') && $request->format === 'excel') {
-            return view('pages.admin.reservasi.laporan-excel', compact('bookings', 'request'));
+        // --- Kalkulasi statistik SELALU dijalankan berdasarkan query (yang mungkin sudah difilter atau belum) ---
+        $topRoomData   = (clone $bookingQuery)
+            ->select('id_room_222320', DB::raw('COUNT(*) as total_bookings'))
+            ->whereNotNull('id_room_222320')
+            ->groupBy('id_room_222320')
+            ->orderByDesc('total_bookings')
+            ->first();
+        $topBookedRoom = $topRoomData ? Room::find($topRoomData->id_room_222320) : null;
+
+        $topTipeRoomData   = (clone $bookingQuery)
+            ->join('room_222320', 'booking_222320.id_room_222320', '=', 'room_222320.id_room_222320')
+            ->select('room_222320.tipe_id_222320', DB::raw('COUNT(*) as total_bookings'))
+            ->whereNotNull('room_222320.tipe_id_222320')
+            ->groupBy('room_222320.tipe_id_222320')
+            ->orderByDesc('total_bookings')
+            ->first();
+        $topBookedTipeRoom = $topTipeRoomData ? TipeRoom::find($topTipeRoomData->tipe_id_222320) : null;
+
+        // Ambil data booking utama dengan relasi
+        $bookings = $bookingQuery
+            ->with(['room.tipeRoom', 'user'])
+            ->orderBy('tanggal_booking_222320', 'desc')
+            ->get();
+
+        // Setel variabel `$showResults` menjadi true jika ada filter atau jika tidak ada filter sama sekali
+        // Ini memastikan tabel hasil selalu ditampilkan, kecuali saat filter dipilih tapi tidak menghasilkan apa-apa.
+        $showResults = true;
+
+        // Handle export PDF atau Excel
+        if ($request->has('format')) {
+            if ($request->format === 'pdf') {
+                return $this->generatePDF($bookings, $request, $topBookedRoom, $topBookedTipeRoom);
+            }
+            // ... (handle excel jika ada)
         }
 
-        return view('pages.admin.laporan.laporan', compact('bookings', 'showResults'));
+        // Tampilkan view laporan utama
+        return view('pages.admin.laporan.laporan', compact(
+            'bookings', 'showResults', 'topBookedRoom', 'topBookedTipeRoom', 'request'
+        ));
     }
 
-    private function generatePDF($bookings, $request)
+    public function generatePDF($bookings, $request, $topBookedRoom, $topBookedTipeRoom)
     {
-        // Data untuk PDF
         $data = [
-            'bookings'         => $bookings,
-            'tanggal_mulai'    => $request->tanggal_mulai,
-            'tanggal_akhir'    => $request->tanggal_akhir,
-            'total_reservasi'  => $bookings->count(),
-            'total_pendapatan' => $bookings->sum('total_harga_222320'),
-            'tanggal_cetak'    => now()->format('d F Y H:i:s')
+            'bookings'          => $bookings,
+            'request'           => $request,
+            'topBookedRoom'     => $topBookedRoom,
+            'topBookedTipeRoom' => $topBookedTipeRoom,
+            'tanggal_cetak'     => Carbon::now()->translatedFormat('d F Y, H:i'),
+            'total_reservasi'   => $bookings->count(),
+            'total_pendapatan'  => $bookings->whereNotIn('status_222320', ['dibatalkan'])->sum('total_harga_222320'),
         ];
 
-        // Generate PDF
-        $pdf = Pdf::loadView('pages.admin.laporan.laporan-pdf', $data);
+        // Menggunakan library barryvdh/laravel-dompdf
+        $pdf = PDF::loadView('pages.admin.laporan.laporan-pdf', $data);
 
-        // Set paper size dan orientasi
-        $pdf->setPaper('A4', 'landscape');
+        // Nama file dinamis berdasarkan filter
+        $fileName = 'laporan-reservasi-' . now()->timestamp . '.pdf';
 
-        // Nama file
-        $filename = 'laporan-reservasi-' . date('Y-m-d-H-i-s') . '.pdf';
-
-        // Download PDF
-        return $pdf->download($filename);
+        return $pdf->stream($fileName);
     }
 }
