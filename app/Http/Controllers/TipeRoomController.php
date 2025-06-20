@@ -39,6 +39,7 @@ class TipeRoomController extends Controller
   public function store(Request $request)
   {
     $request->validate([
+      'tipe_id_222320'   => 'required|string|max:255',
       'nama_tipe_222320' => 'required|string|max:255',
       'deskripsi_222320' => 'required|string',
       'harga_222320'     => 'required|numeric|min:0',
@@ -46,13 +47,12 @@ class TipeRoomController extends Controller
     ]);
 
     // Generate a unique ID for the room type
-    $tipeId = 'TIPE-' . Str::random(8);
 
     // Process facilities array into comma-separated string
     $fasilitas = implode(',', $request->fasilitas_222320);
 
     TipeRoom::create([
-      'tipe_id_222320'   => $tipeId,
+      'tipe_id_222320'   => $request->tipe_id_222320,
       'nama_tipe_222320' => $request->nama_tipe_222320,
       'deskripsi_222320' => $request->deskripsi_222320,
       'harga_222320'     => $request->harga_222320,

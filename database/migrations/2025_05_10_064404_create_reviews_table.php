@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create('review_222320', function (Blueprint $table) {
             $table->string('id_review_222320')->primary();
             $table->string('id_user_222320')->nullable();
-            $table->foreign('id_user_222320')->references('user_id_222320')->on('users_222320')->onDelete('set null');
+            $table->foreign('id_user_222320')->references('email_222320')->on('users_222320')->onDelete('set null');
             $table->integer('rating_222320')->nullable();
             $table->text('komentar_222320')->nullable();
             $table->timestamps();

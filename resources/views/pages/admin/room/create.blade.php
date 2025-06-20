@@ -2,11 +2,11 @@
 
 @section('content')
     <!-- Dashboard Header -->
-    <div class="rounded-xl pt-20 w-full">
+    <div class="rounded-xl w-full">
         <div
             class="flex justify-between items-center mb-4 p-4 text-blue-800 rounded-t-xl bg-white shadow-md border-l-4 border-blue-600">
             <h1 class="text-2xl font-bold">Tambah Kamar Baru</h1>
-            <a href="{{ route('rooms.index') }}">
+            <a href="{{ route('admin.rooms.index') }}">
                 <button
                     class="bg-gray-500 text-white hover:bg-gray-600 font-semibold px-4 py-2 rounded-lg shadow-md transition duration-300 ease-in-out flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
@@ -20,7 +20,7 @@
         </div>
 
         <div class="bg-white rounded-b-xl shadow-md p-6">
-            <form action="{{ route('rooms.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+            <form action="{{ route('admin.rooms.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                 @csrf
 
                 @if ($errors->any())
@@ -35,6 +35,13 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Nama Kamar -->
+                    <div>
+                        <label for="id_room_222320" class="block text-sm font-medium text-gray-700 mb-1">Kode
+                            Kamar</label>
+                        <input type="text" name="id_room_222320" id="id_room_222320" value="{{ old('id_room_222320') }}"
+                            class="border-2 border-blue-200 p-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                            required>
+                    </div>
                     <div>
                         <label for="nama_kamar_222320" class="block text-sm font-medium text-gray-700 mb-1">Nama
                             Kamar</label>
@@ -73,6 +80,8 @@
                                 Maintenance</option>
                         </select>
                     </div>
+
+
 
                     <!-- Gambar Kamar -->
                     <div>

@@ -2,7 +2,7 @@
 
 @section('content')
     <!-- Dashboard Header -->
-    <div class="rounded-xl pt-20 w-full">
+    <div class="rounded-xl  w-full">
         <div
             class="flex justify-between items-center mb-4 p-4 text-blue-800 rounded-t-xl bg-white shadow-md border-l-4 border-blue-600">
             <h1 class="text-2xl font-bold">Kelola Data Kamar</h1>
@@ -81,6 +81,7 @@
                 <thead class="bg-blue-600 text-white text-lg">
                     <tr>
                         <th class="py-4 px-6 text-left">No</th>
+                        <th class="py-4 px-6 text-left">Kode Kamar</th>
                         <th class="py-4 px-6 text-left">Nama Kamar</th>
                         <th class="py-4 px-6 text-left">Gambar</th>
                         <th class="py-4 px-6 text-left">Status</th>
@@ -92,6 +93,7 @@
                     @forelse($rooms as $index => $room)
                         <tr class="odd:bg-white even:bg-blue-50 hover:bg-blue-100 transition duration-200">
                             <td class="py-4 px-6">{{ $index + 1 }}</td>
+                            <td class="py-4 px-6 font-semibold">{{ $room->id_room_222320 }}</td>
                             <td class="py-4 px-6 font-semibold">{{ $room->nama_kamar_222320 }}</td>
                             <td class="py-4 px-6">
                                 <div class="h-16 w-24 rounded overflow-hidden">
@@ -105,17 +107,18 @@
                                     @endif
                                 </div>
                             </td>
+
                             <td class="py-4 px-6">
-                                @if ($room->status_222320 == 'available')
-                                    <span
-                                        class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">available</span>
-                                @elseif($room->status_222320 == 'booked')
-                                    <span
-                                        class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full">booked</span>
-                                @else
-                                    <span
-                                        class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full">maintenance</span>
-                                @endif
+                                <select onchange="updateStatus('{{ $room->id_room_222320 }}', this.value)"
+                                    class="bg-white border border-gray-300 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                    id="status-{{ $room->id_room_222320 }}">
+                                    <option value="available" {{ $room->status_222320 == 'available' ? 'selected' : '' }}>
+                                        Available</option>
+                                    <option value="booked" {{ $room->status_222320 == 'booked' ? 'selected' : '' }}>
+                                        Booked</option>
+
+                                </select>
+
                             </td>
                             <td class="py-4 px-6">{{ $room->tipeRoom->nama_tipe_222320 ?? 'N/A' }}</td>
                             <td class="py-4 px-6 text-center">
@@ -158,7 +161,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="py-6 px-6 text-center text-gray-500">Tidak ada data kamar</td>
+                            <td colspan="8" class="py-6 px-6 text-center text-gray-500">Tidak ada data kamar</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -180,8 +183,19 @@
         </div>
     </div>
 
+
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed top-4 right-4 z-50 hidden">
+        <div class="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg">
+            <span id="toastMessage"></span>
+        </div>
+    </div>
+
     <!-- Confirmation Dialog for Delete -->
     <script>
+        let currentRoomId = null;
+
         function confirmDelete() {
             return confirm('Apakah Anda yakin ingin menghapus kamar ini?');
         }
@@ -210,5 +224,99 @@
                 rows[i].style.display = match ? '' : 'none';
             }
         }
+
+
+        function updateStatus(roomId, newStatus) {
+            const selectElement = document.getElementById(`status-${roomId}`);
+            // Store the original value from a data attribute, or find the initially selected option
+            let originalStatus = selectElement.dataset.originalStatus;
+
+            if (!originalStatus) {
+                for (let i = 0; i < selectElement.options.length; i++) {
+                    if (selectElement.options[i].defaultSelected) {
+                        originalStatus = selectElement.options[i].value;
+                        selectElement.dataset.originalStatus = originalStatus; // Store it for future changes
+                        break;
+                    }
+                }
+            }
+
+            fetch(`/admin/rooms/${roomId}/change-status`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({
+                        status_222320: newStatus
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        // If response is not ok, read the error message and throw an error
+                        return response.json().then(err => {
+                            throw err;
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        // On success, update the 'defaultSelected' and 'originalStatus' to the new value
+                        for (let i = 0; i < selectElement.options.length; i++) {
+                            selectElement.options[i].defaultSelected = (selectElement.options[i].value === newStatus);
+                        }
+                        selectElement.dataset.originalStatus = newStatus;
+                        showToast('Status updated successfully', 'success');
+                    } else {
+                        // Revert select to the original value if the server returns success: false
+                        selectElement.value = originalStatus;
+                        showToast(data.message || 'Failed to update status', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Revert select to the original value on any fetch error
+                    selectElement.value = originalStatus;
+                    showToast(error.message || 'An error occurred while updating status', 'error');
+                });
+        }
+        // Toast Notification Function
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+
+            toastMessage.textContent = message;
+
+            // Update toast color based on type
+            const toastContainer = toast.querySelector('div');
+            if (type === 'error') {
+                toastContainer.className = 'bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg';
+            } else {
+                toastContainer.className = 'bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg';
+            }
+
+            toast.classList.remove('hidden');
+
+            // Auto hide after 3 seconds
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('stockModal');
+            if (event.target === modal) {
+                closeStockModal();
+            }
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeStockModal();
+            }
+        });
     </script>
 @endsection

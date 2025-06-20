@@ -18,7 +18,6 @@ class UserSeeder extends Seeder
     {
         // Create admin user
         User::create([
-            'user_id_222320'  => \App\Helpers\IdGenerator::userId(),
             'nama_222320'     => 'Admin Hotel',
             'email_222320'    => 'admin@hotel.com',
             'phone_222320'    => '081234567890',

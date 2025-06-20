@@ -47,19 +47,6 @@ class TipeRoom extends Model
         'fasilitas_222320',
     ];
 
-    protected static function boot()
-    {
-        parent::boot();
-
-        // Event "creating" berjalan sebelum model disimpan ke database
-        static::creating(function ($tiperoom) {
-            // Generate ID hanya jika belum diisi
-            if (empty($tiperoom->tipe_id_222320)) {
-                $tiperoom->tipe_id_222320 = IdGenerator::roomId();
-            }
-        });
-    }
-
     /**
      * Get the rooms for the room type.
      */

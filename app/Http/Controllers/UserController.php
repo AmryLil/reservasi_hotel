@@ -18,7 +18,7 @@ class UserController extends Controller
   public function index()
   {
     $users = User::all();
-    return view('users.index', compact('users'));
+    return view('pages.admin.user.index', compact('users'));
   }
 
   /**
@@ -28,7 +28,7 @@ class UserController extends Controller
    */
   public function create()
   {
-    return view('users.create');
+    return view('pages.admin.user.create');
   }
 
   /**
@@ -42,15 +42,15 @@ class UserController extends Controller
     $request->validate([
       'nama_222320'     => 'required|string|max:255',
       'email_222320'    => 'required|string|email|max:255|unique:users_222320,email_222320',
-      'phone_222320'    => 'required|string|max:15',
-      'alamat_222320'   => 'required|string',
-      'gender_222320'   => 'required|in:male,female',
+      'phone_222320'    => 'nullable|string|max:15',
+      'alamat_222320'   => 'nullable|string',
+      'gender_222320'   => 'nullable|in:L,P',
       'password_222320' => 'required|string|min:8|confirmed',
       'role_222320'     => 'required|in:admin,user',
     ]);
 
     $user = User::create([
-      'user_id_222320'  => Str::uuid(),
+      'email_222320'    => Str::uuid(),
       'nama_222320'     => $request->nama_222320,
       'email_222320'    => $request->email_222320,
       'phone_222320'    => $request->phone_222320,
@@ -61,7 +61,7 @@ class UserController extends Controller
     ]);
 
     return redirect()
-      ->route('users.index')
+      ->route('admin.users.index')
       ->with('success', 'User created successfully.');
   }
 
@@ -73,7 +73,7 @@ class UserController extends Controller
    */
   public function show(User $user)
   {
-    return view('users.show', compact('user'));
+    return view('pages.admin.user.show', compact('user'));
   }
 
   /**
@@ -84,7 +84,7 @@ class UserController extends Controller
    */
   public function edit(User $user)
   {
-    return view('users.edit', compact('user'));
+    return view('pages.admin.user.edit', compact('user'));
   }
 
   /**
@@ -98,9 +98,9 @@ class UserController extends Controller
   {
     $rules = [
       'nama_222320'   => 'required|string|max:255',
-      'phone_222320'  => 'required|string|max:15',
-      'alamat_222320' => 'required|string',
-      'gender_222320' => 'required|in:male,female',
+      'phone_222320'  => 'nullable|string|max:15',
+      'alamat_222320' => 'nullable|string',
+      'gender_222320' => 'nullable|in:L,P',
       'role_222320'   => 'required|in:admin,user',
     ];
 
@@ -132,7 +132,7 @@ class UserController extends Controller
     $user->update($userData);
 
     return redirect()
-      ->route('users.index')
+      ->route('admin.users.index')
       ->with('success', 'User updated successfully');
   }
 
@@ -147,7 +147,7 @@ class UserController extends Controller
     $user->delete();
 
     return redirect()
-      ->route('users.index')
+      ->route('admin.users.index')
       ->with('success', 'User deleted successfully');
   }
 
@@ -159,7 +159,7 @@ class UserController extends Controller
   public function profile()
   {
     $user = auth()->user();
-    return view('users.profile', compact('user'));
+    return view('pages.admin.user.profile', compact('user'));
   }
 
   /**
@@ -208,7 +208,7 @@ class UserController extends Controller
    */
   public function changePassword()
   {
-    return view('users.change-password');
+    return view('pages.admin.user.change-password');
   }
 
   /**

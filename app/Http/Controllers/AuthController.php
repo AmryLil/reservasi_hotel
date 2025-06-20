@@ -36,6 +36,7 @@ class AuthController extends Controller
       [
         'email'    => ['required', 'email'],
         'password' => 'required|min:8|max:10',
+        'role'     => 'required|in:admin,user',  // Validasi role
       ],
       [
         'email.required'    => 'Email wajib diisi.',
@@ -43,41 +44,59 @@ class AuthController extends Controller
         'password.required' => 'Password wajib diisi.',
         'password.min'      => 'Password harus memiliki minimal 8 karakter.',
         'password.max'      => 'Password tidak boleh lebih dari 10 karakter.',
+        'role.required'     => 'Role wajib dipilih.',
+        'role.in'           => 'Role yang dipilih tidak valid.',
       ]
     );
 
     // Menambahkan log percobaan login
-    Log::info('Attempting login for:', $credentials);  // Menyimpan log
+    Log::info('Attempting login for:', [
+      'email' => $credentials['email'],
+      'role'  => $credentials['role']
+    ]);
 
-    // Attempt login menggunakan kolom yang sudah disesuaikan
+    // Attempt login menggunakan kolom yang sudah disesuaikan dengan role
     if (Auth::attempt([
       'email_222320' => $credentials['email'],
-      'password'     => $credentials['password']
+      'password'     => $credentials['password'],
+      'role_222320'  => $credentials['role']  // Menambahkan role dalam autentikasi
     ])) {
       // Regenerasi session ID untuk keamanan
       $request->session()->regenerate();
 
       // Menyimpan data tambahan ke session, termasuk role
       session([
-        'user_id'   => Auth::user()->id_user_222320,
-        'user_role' => Auth::user()->role_222320,  // Role user, misalnya 'admin' atau 'user'
-        'email'     => Auth::user()->email_222320,  // Role user, misalnya 'admin' atau 'user'
+        'user_id'   => Auth::user()->email_222320,
+        'user_role' => Auth::user()->role_222320,
+        'email'     => Auth::user()->email_222320,
         'name'      => Auth::user()->nama_222320,
+      ]);
+
+      // Log successful login
+      Log::info('Login successful for user:', [
+        'user_id' => Auth::user()->email_222320,
+        'email'   => Auth::user()->email_222320,
+        'role'    => Auth::user()->role_222320
       ]);
 
       // Redirect berdasarkan peran pengguna
       if (Auth::user()->role_222320 === 'admin') {
-        return redirect()->intended(route('admin.rooms.index'))->with('success', 'Login berhasil!');
+        return redirect()->intended(route('admin.rooms.index'))->with('success', 'Login berhasil sebagai Admin!');
       } else {
-        return redirect()->intended('/')->with('success', 'Login berhasil!');
+        return redirect()->intended('/')->with('success', 'Login berhasil sebagai User!');
       }
     }
 
-    Log::info('Session data after login attempt:', $request->session()->all());
+    // Log failed login attempt
+    Log::warning('Failed login attempt:', [
+      'email' => $credentials['email'],
+      'role'  => $credentials['role'],
+      'ip'    => $request->ip()
+    ]);
 
     return back()->withErrors([
-      'email' => 'Password dan email anda salah',
-    ]);
+      'email' => 'Email, password, atau role yang Anda masukkan salah.',
+    ])->withInput($request->only('email', 'role'));  // Mempertahankan input email dan role
   }
 
   /**
@@ -101,21 +120,20 @@ class AuthController extends Controller
     $request->validate([
       'nama_222320'     => 'required|string|max:255',
       'email_222320'    => 'required|string|email|max:255|unique:users_222320,email_222320',
-      'phone_222320'    => '',
-      'alamat_222320'   => '',
-      'gender_222320'   => '',
+      'phone_222320'    => 'nullable|string|max:255',
+      'alamat_222320'   => 'nullable|string|max:500',
+      'gender_222320'   => 'nullable|string|in:male,female,other',
       'password_222320' => 'required|string|min:8|confirmed',
     ]);
 
     $user = User::create([
-      'user_id_222320'  => Str::uuid(),
       'nama_222320'     => $request->nama_222320,
       'email_222320'    => $request->email_222320,
       'phone_222320'    => $request->phone_222320,
       'alamat_222320'   => $request->alamat_222320,
       'gender_222320'   => $request->gender_222320,
       'password_222320' => Hash::make($request->password_222320),
-      'role_222320'     => 'user',  // Default role for new registrations
+      'role_222320'     => 'user',
     ]);
 
     // Auth::login($user);

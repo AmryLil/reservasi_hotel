@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\IdGenerator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -43,4 +44,15 @@ class Gallery extends Model
         'deskripsi_222320',
         'path_gambar_222320',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->{$model->getKeyName()})) {
+                $model->{$model->getKeyName()} = IdGenerator::galleryId();
+            }
+        });
+    }
 }

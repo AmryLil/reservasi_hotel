@@ -19,7 +19,7 @@ class IdGenerator
    *
    * @param string $prefix The prefix for the ID (e.g., 'USR', 'ROOM')
    * @param string $table The table name to check last ID (e.g., 'users_222320')
-   * @param string $field The primary key field name (e.g., 'user_id_222320')
+   * @param string $field The primary key field name (e.g., 'email_222320')
    * @param int $padding The length of the numeric part (defaults to 5)
    * @return string The generated ID
    */
@@ -72,7 +72,7 @@ class IdGenerator
    */
   public static function userId()
   {
-    return self::generateId('USR', 'users_222320', 'user_id_222320');
+    return self::generateId('USR', 'users_222320', 'email_222320');
   }
 
   /**

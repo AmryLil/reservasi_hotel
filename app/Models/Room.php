@@ -47,19 +47,6 @@ class Room extends Model
         'tipe_id_222320',
     ];
 
-    protected static function boot()
-    {
-        parent::boot();
-
-        // Event "creating" berjalan sebelum model disimpan ke database
-        static::creating(function ($room) {
-            // Generate ID hanya jika belum diisi
-            if (empty($room->id_room_222320)) {
-                $room->id_room_222320 = IdGenerator::roomId();
-            }
-        });
-    }
-
     /**
      * Get the room type associated with the room.
      */

@@ -42,10 +42,23 @@ class RoomController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
+            'id_room_222320'    => 'required|string|max:255|unique:room_222320,id_room_222320',
             'nama_kamar_222320' => 'required|string|max:255',
             'gambar_222320'     => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'status_222320'     => 'required|string|in:available,booked,maintenance',
             'tipe_id_222320'    => 'required|exists:tiperoom_222320,tipe_id_222320',
+        ], [
+            'id_room_222320.unique'      => 'ID Kamar sudah digunakan. Silakan gunakan ID yang berbeda.',
+            'id_room_222320.required'    => 'ID Kamar wajib diisi.',
+            'nama_kamar_222320.required' => 'Nama kamar wajib diisi.',
+            'gambar_222320.required'     => 'Gambar kamar wajib diupload.',
+            'gambar_222320.image'        => 'File harus berupa gambar.',
+            'gambar_222320.mimes'        => 'Gambar harus berformat jpeg, png, jpg, atau gif.',
+            'gambar_222320.max'          => 'Ukuran gambar maksimal 2MB.',
+            'status_222320.required'     => 'Status kamar wajib dipilih.',
+            'status_222320.in'           => 'Status kamar harus available, booked, atau maintenance.',
+            'tipe_id_222320.required'    => 'Tipe kamar wajib dipilih.',
+            'tipe_id_222320.exists'      => 'Tipe kamar yang dipilih tidak valid.',
         ]);
 
         if ($validator->fails()) {
@@ -61,6 +74,7 @@ class RoomController extends Controller
         }
 
         Room::create([
+            'id_room_222320'    => $request->id_room_222320,
             'nama_kamar_222320' => $request->nama_kamar_222320,
             'gambar_222320'     => $imagePath ?? null,
             'status_222320'     => $request->status_222320,
@@ -200,20 +214,30 @@ class RoomController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect()
-                ->back()
-                ->withErrors($validator)
-                ->withInput();
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid status value'
+            ], 400);
         }
 
         $room                = Room::findOrFail($id);
         $room->status_222320 = $request->status_222320;
         $room->save();
 
-        return redirect()
-            ->back()
-            ->with('success', 'Room status updated successfully');
+        return response()->json([
+            'success' => true,
+            'message' => 'Room status updated successfully',
+            'status'  => $request->status_222320
+        ]);
     }
+
+    /**
+     * Update room stock.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
 
     /**
      * Get rooms by type.

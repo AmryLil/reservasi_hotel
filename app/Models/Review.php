@@ -49,6 +49,6 @@ class Review extends Model
      */
     public function user()
     {
-        return $this->belongsTo(User::class, 'id_user_222320', 'user_id_222320');
+        return $this->belongsTo(User::class, 'id_user_222320', 'email_222320');
     }
 }

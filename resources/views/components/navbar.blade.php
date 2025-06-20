@@ -17,28 +17,28 @@
                     class="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform {{ Request::is('/') ? 'scale-x-100' : '' }}"></span>
             </a>
 
-            <a href="/rooms"
+            <a href="{{ route('user.rooms.index') }}"
                 class="relative group px-4 py-2 {{ Request::is('rooms') ? 'text-blue-600 font-medium' : 'text-gray-700' }}">
                 Kamar
                 <span
                     class="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform {{ Request::is('shop') ? 'scale-x-100' : '' }}"></span>
             </a>
 
-            <a href="/galery"
-                class="relative group px-4 py-2 {{ Request::is('kategori') ? 'text-blue-600 font-medium' : 'text-gray-700' }}">
-                Galery
+            <a href="{{ route('gallery.index') }}"
+                class="relative group px-4 py-2 {{ Request::is('gallery.index') ? 'text-blue-600 font-medium' : 'text-gray-700' }}">
+                Gallery
                 <span
-                    class="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform {{ Request::is('kategori') ? 'scale-x-100' : '' }}"></span>
+                    class="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform {{ Request::is('gallery.index') ? 'scale-x-100' : '' }}"></span>
             </a>
 
-            <a href="/about"
+            <a href="#"
                 class="relative group px-4 py-2 {{ Request::is('about') ? 'text-blue-600 font-medium' : 'text-gray-700' }}">
                 Tentang Kami
                 <span
                     class="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform {{ Request::is('about') ? 'scale-x-100' : '' }}"></span>
             </a>
 
-            <a href="/contact-us"
+            <a href="#"
                 class="relative group px-4 py-2 {{ Request::is('contact-us') ? 'text-blue-600 font-medium' : 'text-gray-700' }}">
                 Kontak
                 <span
@@ -108,24 +108,16 @@
                         <nav class="p-4">
                             <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-4">Menu</p>
 
-                            <a href="#"
-                                class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-100 mb-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                </svg>
-                                <span class="font-medium text-gray-700">Profile Saya</span>
-                            </a>
 
-                            <a href="#"
+
+                            <a href="{{ route('reservasi.user') }}"
                                 class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-100 mb-1">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none"
                                     viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                <span class="font-medium text-gray-700">Riwayat Transaksi</span>
+                                <span class="font-medium text-gray-700">Reservasi Saya</span>
                             </a>
 
                             <div class="border-t border-gray-200 my-4"></div>
@@ -185,10 +177,10 @@
         </div>
         <nav class="p-4">
             <a href="/" class="block py-3 px-4 text-gray-700 border-b border-gray-100">Beranda</a>
-            <a href="/rooms" class="block py-3 px-4 text-gray-700 border-b border-gray-100">Kamar</a>
-            <a href="/galery" class="block py-3 px-4 text-gray-700 border-b border-gray-100">Gallery</a>
-            <a href="/about" class="block py-3 px-4 text-gray-700 border-b border-gray-100">Tentang Kami</a>
-            <a href="/contact-us" class="block py-3 px-4 text-gray-700 border-b border-gray-100">Kontak</a>
+            <a href="#" class="block py-3 px-4 text-gray-700 border-b border-gray-100">Kamar</a>
+            <a href="#" class="block py-3 px-4 text-gray-700 border-b border-gray-100">Gallery</a>
+            <a href="#" class="block py-3 px-4 text-gray-700 border-b border-gray-100">Tentang Kami</a>
+            <a href="#" class="block py-3 px-4 text-gray-700 border-b border-gray-100">Kontak</a>
         </nav>
     </div>
 </div>
