@@ -38,6 +38,11 @@ Route::get('/rooms', [App\Http\Controllers\UserRoomController::class, 'index'])-
 // Available rooms for booking
 Route::get('/rooms/available', [App\Http\Controllers\UserRoomController::class, 'available'])->name('user.rooms.available');
 
+Route::post('/remove-voucher-session', function () {
+    session()->forget('show_new_user_voucher');
+    return response()->json(['status' => 'session cleared']);
+})->name('remove.voucher.session');
+
 // Rooms by type
 Route::get('/rooms/type/{typeId}', [App\Http\Controllers\UserRoomController::class, 'getByType'])->name('user.rooms.by_type');
 
@@ -66,6 +71,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reservasi/{id}', [ReservasiController::class, 'show'])->name('reservasi.show');
     Route::patch('/reservasi/{id}/cancel', [ReservasiController::class, 'cancel'])->name('reservasi.cancel');
     Route::get('/reservasi-saya', [ReservasiController::class, 'riwayat'])->name('reservasi.riwayat');
+
+    Route::post('/vouchers/validate', [PembayaranController::class, 'validateAjax'])->name('vouchers.validate')->middleware('auth');
 
     Route::post('/reservasi/check-availability', [ReservasiController::class, 'checkAvailability'])->name('reservasi.checkAvailability');
 

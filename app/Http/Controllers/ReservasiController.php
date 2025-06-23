@@ -6,12 +6,15 @@ use App\Helpers\IdGenerator;
 use App\Models\Booking;
 use App\Models\Room;
 use App\Models\TipeRoom;
+use App\Models\User;
+use App\Models\Voucher;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class ReservasiController extends Controller
 {
@@ -75,24 +78,25 @@ class ReservasiController extends Controller
      */
     public function store(Request $request)
     {
+        // 1. TAMBAHKAN 'kode_voucher' DI SINI
         $request->validate([
             'id_room_222320'          => 'required|exists:room_222320,id_room_222320',
             'tanggal_checkin_222320'  => 'required|date|after_or_equal:today',
             'tanggal_checkout_222320' => 'required|date|after:tanggal_checkin_222320',
-            'catatan_222320'          => 'nullable|string|max:500'
+            'catatan_222320'          => 'nullable|string|max:500',
+            'kode_voucher'            => 'nullable|string|max:50'  // <-- Baris baru
         ]);
 
         DB::beginTransaction();
 
         try {
-            // Check room availability again
+            // Pengecekan ketersediaan kamar dan tanggal Anda yang sudah bagus (tidak diubah)
             $room = Room::with('tipeRoom')->findOrFail($request->id_room_222320);
 
             if ($room->status_222320 !== 'available') {
-                throw new \Exception('Kamar tidak tersedia');
+                throw new \Exception('Kamar tidak tersedia untuk tanggal yang dipilih.');
             }
 
-            // Check for conflicting bookings
             $conflictingBooking = Booking::where('id_room_222320', $request->id_room_222320)
                 ->where('status_222320', '!=', 'dibatalkan')
                 ->where(function ($q) use ($request) {
@@ -108,42 +112,78 @@ class ReservasiController extends Controller
                 ->exists();
 
             if ($conflictingBooking) {
-                throw new \Exception('Tanggal yang dipilih sudah dipesan');
+                throw new \Exception('Tanggal yang dipilih sudah dipesan oleh orang lain.');
             }
 
-            // Calculate total days and price
-            $checkin    = Carbon::parse($request->tanggal_checkin_222320);
-            $checkout   = Carbon::parse($request->tanggal_checkout_222320);
-            $totalHari  = $checkin->diffInDays($checkout);
-            $totalHarga = $totalHari * $room->tipeRoom->harga_222320;
+            // 2. Kalkulasi harga asli (sedikit modifikasi nama variabel agar jelas)
+            $checkin   = Carbon::parse($request->tanggal_checkin_222320);
+            $checkout  = Carbon::parse($request->tanggal_checkout_222320);
+            $totalHari = $checkin->diffInDays($checkout);
 
-            // Create booking
+            $hargaAsli       = $totalHari * $room->tipeRoom->harga_222320;
+            $hargaAkhir      = $hargaAsli;  // Harga akhir awalnya sama dengan harga asli
+            $voucherTerpakai = null;
+
+            // =======================================================
+            // 3. LOGIKA VOUCHER DITAMBAHKAN DI SINI
+            // =======================================================
+            if ($request->filled('kode_voucher')) {
+                $user    = Auth::user();
+                $voucher = Voucher::where('kode_voucher_222320', $request->kode_voucher)->first();
+
+                // Lakukan validasi final di backend
+                if ($voucher && $voucher->status_222320 === 'tersedia' && $voucher->id_user_222320 === $user->email_222320 && !Carbon::now()->isAfter($voucher->tanggal_kadaluarsa_222320)) {
+                    // Jika valid, hitung harga akhir yang baru
+                    $diskon          = ($hargaAsli * $voucher->persentase_diskon_222320) / 100;
+                    $hargaAkhir      = $hargaAsli - $diskon;
+                    $voucherTerpakai = $voucher;  // Simpan voucher untuk diupdate nanti
+                } else {
+                    // Jika voucher yang dikirim tidak valid, batalkan proses dengan pesan error
+                    throw new \Exception('Kode voucher yang Anda gunakan tidak valid atau sudah tidak berlaku.');
+                }
+            }
+            // =======================================================
+            // 4. Buat booking dengan HARGA AKHIR
+            // =======================================================
             $booking = Booking::create([
                 'email_222320'            => Auth::user()->email_222320,
                 'id_room_222320'          => $request->id_room_222320,
                 'tanggal_checkin_222320'  => $request->tanggal_checkin_222320,
                 'tanggal_checkout_222320' => $request->tanggal_checkout_222320,
-                'jumlah_tamu_222320'      => 3,
-                'total_harga_222320'      => $totalHarga,
+                'jumlah_tamu_222320'      => 3,  // Anda mungkin ingin membuat ini dinamis
+                'total_harga_222320'      => $hargaAkhir,  // <-- MENGGUNAKAN HARGA AKHIR YANG BENAR
                 'status_222320'           => 'menunggu_konfirmasi',
                 'catatan_222320'          => $request->catatan_222320,
                 'tanggal_booking_222320'  => now()
             ]);
 
+            // **PENTING**: Kode Anda tidak membuat 'Pembayaran' di sini, jadi saya juga tidak menambahkannya.
+            // Ini berarti alur Anda adalah: buat booking -> lalu user bayar di halaman lain. Ini sudah benar.
+
             // Update room status to reserved temporarily
+            // Anda mungkin ingin mengubah ini menjadi 'menunggu_pembayaran'
             $room->update(['status_222320' => 'booked']);
 
-            DB::commit();
+            // =======================================================
+            // 5. UPDATE STATUS VOUCHER JIKA DIGUNAKAN
+            // =======================================================
+            if ($voucherTerpakai) {
+                $voucherTerpakai->status_222320              = 'terpakai';
+                $voucherTerpakai->id_booking_terpakai_222320 = $booking->id_booking_222320;
+                $voucherTerpakai->save();
+            }
+
+            DB::commit();  // Simpan semua perubahan ke database jika tidak ada error
 
             return redirect()
-                ->route('reservasi.user', $booking->id_booking_222320)
-                ->with('success', 'Reservasi berhasil dibuat. Menunggu konfirmasi admin.');
+                ->route('reservasi.user')  // Redirect ke halaman daftar reservasi
+                ->with('success', 'Reservasi berhasil dibuat. Silakan segera lakukan pembayaran.');
         } catch (\Exception $e) {
-            DB::rollback();
+            DB::rollback();  // Batalkan semua jika ada error
             return redirect()
                 ->back()
                 ->withInput()
-                ->with('error', $e->getMessage());
+                ->with('error', 'Gagal membuat reservasi: ' . $e->getMessage());
         }
     }
 
@@ -501,8 +541,8 @@ class ReservasiController extends Controller
      */
     public function laporan(Request $request)
     {
-        // Validasi hanya dijalankan jika ada input filter
-        if ($request->has('filter_type')) {
+        // Tahap 1: Validasi (Tidak ada perubahan, ini sudah benar)
+        if ($request->has('filter_type') && !empty($request->filter_type)) {
             $request->validate([
                 'filter_type'   => 'in:harian,mingguan,bulanan,tahunan,custom',
                 'tanggal'       => 'nullable|required_if:filter_type,harian|date',
@@ -516,10 +556,10 @@ class ReservasiController extends Controller
             ]);
         }
 
-        // Query dasar untuk booking
+        // Tahap 2: Buat Query Dasar dan Terapkan Filter
         $bookingQuery = Booking::query();
 
-        // Terapkan filter HANYA JIKA ada request filter_type
+        // [PERBAIKAN UTAMA] Mengembalikan logika filter Anda yang sempat hilang
         if ($request->has('filter_type') && !empty($request->filter_type)) {
             $filterType = $request->input('filter_type');
             switch ($filterType) {
@@ -546,8 +586,11 @@ class ReservasiController extends Controller
                     break;
             }
         }
+        // Filter sekarang sudah berfungsi kembali.
 
-        // --- Kalkulasi statistik SELALU dijalankan berdasarkan query (yang mungkin sudah difilter atau belum) ---
+        // Tahap 3: Kalkulasi Statistik dari Query yang Sudah Difilter
+
+        // Top Room (Query ini sudah benar dari awal)
         $topRoomData   = (clone $bookingQuery)
             ->select('id_room_222320', DB::raw('COUNT(*) as total_bookings'))
             ->whereNotNull('id_room_222320')
@@ -556,57 +599,102 @@ class ReservasiController extends Controller
             ->first();
         $topBookedRoom = $topRoomData ? Room::find($topRoomData->id_room_222320) : null;
 
-        $topTipeRoomData   = (clone $bookingQuery)
+        // Top Tipe Room (Query diperbaiki agar lebih aman)
+        $topBookedTipeRoom = (clone $bookingQuery)
             ->join('room_222320', 'booking_222320.id_room_222320', '=', 'room_222320.id_room_222320')
-            ->select('room_222320.tipe_id_222320', DB::raw('COUNT(*) as total_bookings'))
+            ->join('tiperoom_222320', 'room_222320.tipe_id_222320', '=', 'tiperoom_222320.tipe_id_222320')
+            ->select('tiperoom_222320.nama_tipe_222320', DB::raw('COUNT(booking_222320.id_booking_222320) as total_bookings'))
             ->whereNotNull('room_222320.tipe_id_222320')
-            ->groupBy('room_222320.tipe_id_222320')
+            ->groupBy('tiperoom_222320.nama_tipe_222320')
             ->orderByDesc('total_bookings')
             ->first();
-        $topBookedTipeRoom = $topTipeRoomData ? TipeRoom::find($topTipeRoomData->tipe_id_222320) : null;
 
-        // Ambil data booking utama dengan relasi
+        // Top Customer (Query diperbaiki sesuai struktur Model User Anda)
+        $topCustomer = (clone $bookingQuery)
+            ->join('users_222320', 'booking_222320.email_222320', '=', 'users_222320.email_222320')
+            ->select('users_222320.nama_222320', DB::raw('COUNT(booking_222320.id_booking_222320) as total_bookings'))
+            ->whereNotNull('booking_222320.email_222320')
+            ->groupBy('users_222320.nama_222320')
+            ->orderByDesc('total_bookings')
+            ->first();
+
+        // Statistik lainnya
+        $successfulBookingsCount = (clone $bookingQuery)->where('status_222320', '!=', 'dibatalkan')->count();
+        $cancelledBookingsCount  = (clone $bookingQuery)->where('status_222320', '=', 'dibatalkan')->count();
+
+        // Tahap 4: Ambil Data Utama
         $bookings = $bookingQuery
             ->with(['room.tipeRoom', 'user'])
             ->orderBy('tanggal_booking_222320', 'desc')
             ->get();
 
-        // Setel variabel `$showResults` menjadi true jika ada filter atau jika tidak ada filter sama sekali
-        // Ini memastikan tabel hasil selalu ditampilkan, kecuali saat filter dipilih tapi tidak menghasilkan apa-apa.
         $showResults = true;
 
-        // Handle export PDF atau Excel
-        if ($request->has('format')) {
-            if ($request->format === 'pdf') {
-                return $this->generatePDF($bookings, $request, $topBookedRoom, $topBookedTipeRoom);
-            }
-            // ... (handle excel jika ada)
+        // Tahap 5: Kirim ke View atau PDF
+        $viewData = compact(
+            'bookings', 'showResults', 'topBookedRoom', 'topBookedTipeRoom',
+            'topCustomer', 'successfulBookingsCount', 'cancelledBookingsCount', 'request'
+        );
+
+        if ($request->has('format') && $request->format === 'pdf') {
+            // Asumsi method generatePDF menerima array data
+            return $this->generatePDF($viewData);
         }
 
-        // Tampilkan view laporan utama
-        return view('pages.admin.laporan.laporan', compact(
-            'bookings', 'showResults', 'topBookedRoom', 'topBookedTipeRoom', 'request'
-        ));
+        return view('pages.admin.laporan.laporan', $viewData);
     }
 
-    public function generatePDF($bookings, $request, $topBookedRoom, $topBookedTipeRoom)
-    {
-        $data = [
-            'bookings'          => $bookings,
-            'request'           => $request,
-            'topBookedRoom'     => $topBookedRoom,
-            'topBookedTipeRoom' => $topBookedTipeRoom,
-            'tanggal_cetak'     => Carbon::now()->translatedFormat('d F Y, H:i'),
-            'total_reservasi'   => $bookings->count(),
-            'total_pendapatan'  => $bookings->whereNotIn('status_222320', ['dibatalkan'])->sum('total_harga_222320'),
-        ];
+    // [MODIFIKASI] Signature method diubah untuk menerima parameter baru
 
-        // Menggunakan library barryvdh/laravel-dompdf
+    // GANTI method generatePDF LAMA ANDA DENGAN YANG BARU INI
+
+    public function generatePDF(array $data)
+    {
+        // data 'bookings', 'topBookedRoom', dll sudah ada di dalam array $data
+
+        // Kita hanya perlu menambahkan data spesifik untuk PDF
+        $data['tanggal_cetak'] = Carbon::now()->translatedFormat('d F Y, H:i');
+
+        $request = $data['request'];
+        $periode = 'Semua Periode';
+
+        if ($request->has('filter_type') && !empty($request->filter_type)) {
+            switch ($request->filter_type) {
+                case 'harian':
+                    $periode = 'Periode Harian: ' . Carbon::parse($request->tanggal)->translatedFormat('d F Y');
+                    break;
+                case 'mingguan':
+                    $start   = Carbon::parse($request->minggu)->startOfWeek()->translatedFormat('d M Y');
+                    $end     = Carbon::parse($request->minggu)->endOfWeek()->translatedFormat('d M Y');
+                    $periode = "Periode Mingguan: $start - $end";
+                    break;
+                case 'bulanan':
+                    $bulan   = Carbon::create()->month((int) $request->bulan)->translatedFormat('F');
+                    $periode = "Periode Bulanan: $bulan " . $request->tahun_bulan;
+                    break;
+                case 'tahunan':
+                    $periode = 'Periode Tahunan: ' . $request->tahun;
+                    break;
+                case 'custom':
+                    $start   = Carbon::parse($request->tanggal_mulai)->translatedFormat('d M Y');
+                    $end     = Carbon::parse($request->tanggal_akhir)->translatedFormat('d M Y');
+                    $periode = "Periode: $start s/d $end";
+                    break;
+            }
+        }
+        $data['periode_laporan'] = $periode;
+
+        // Kalkulasi ulang total pendapatan di sini untuk akurasi, dari data bookings yang sudah final.
+        $data['total_pendapatan'] = $data['bookings']->where('status_222320', '!=', 'dibatalkan')->sum('total_harga_222320');
+        $data['total_reservasi']  = $data['bookings']->count();
+
+        // Load view PDF dengan data yang sudah lengkap
         $pdf = PDF::loadView('pages.admin.laporan.laporan-pdf', $data);
 
-        // Nama file dinamis berdasarkan filter
-        $fileName = 'laporan-reservasi-' . now()->timestamp . '.pdf';
+        // Buat nama file dinamis
+        $fileName = 'laporan-reservasi-' . Str::slug($periode, '-') . '.pdf';
 
+        // Kirim PDF ke browser untuk di-download atau ditampilkan
         return $pdf->stream($fileName);
     }
 }

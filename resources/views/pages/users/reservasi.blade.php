@@ -3,53 +3,60 @@
 @section('content')
     <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8">
         <div class="container mx-auto px-4">
-            <!-- Header -->
             <div class="text-center mb-10">
                 <h1 class="text-4xl font-bold text-gray-800 mb-2">Daftar Reservasi & Pembayaran</h1>
                 <p class="text-gray-600">Kelola reservasi dan pembayaran Anda dengan mudah</p>
             </div>
 
-            <!-- Alert Messages -->
             @if (session('success'))
                 <div class="bg-green-500 text-white p-4 rounded-lg mb-6 shadow-md">
-                    <div class="flex items-center">
-                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                clip-rule="evenodd"></path>
-                        </svg>
-                        {{ session('success') }}
-                    </div>
+                    {{ session('success') }}
                 </div>
             @endif
-
             @if (session('error'))
                 <div class="bg-red-500 text-white p-4 rounded-lg mb-6 shadow-md">
-                    <div class="flex items-center">
-                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                                clip-rule="evenodd"></path>
-                        </svg>
-                        {{ session('error') }}
-                    </div>
+                    {{ session('error') }}
                 </div>
             @endif
-
             @if (session('info'))
                 <div class="bg-blue-500 text-white p-4 rounded-lg mb-6 shadow-md">
-                    <div class="flex items-center">
-                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                                clip-rule="evenodd"></path>
-                        </svg>
-                        {{ session('info') }}
-                    </div>
+                    {{ session('info') }}
                 </div>
             @endif
 
-            <!-- Empty State -->
+            @if (isset($vouchers) && !$vouchers->isEmpty())
+                <div class="mb-10">
+                    <h2 class="text-2xl font-bold text-gray-700 mb-4">Voucher Tersedia Untuk Anda</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        @foreach ($vouchers as $voucher)
+                            <div
+                                class="bg-gradient-to-br from-yellow-50 to-orange-100 p-5 rounded-lg shadow-md border-l-4 border-yellow-400">
+                                <div class="flex justify-between items-center">
+                                    <span
+                                        class="px-3 py-1 rounded-full text-sm font-semibold 
+                                        @if ($voucher->tipe_222320 === 'pengguna_baru') bg-blue-200 text-blue-800 @else bg-green-200 text-green-800 @endif">
+                                        {{ ucfirst(str_replace('_', ' ', $voucher->tipe_222320)) }}
+                                    </span>
+                                    <div class="text-right">
+                                        <p class="text-lg font-bold text-yellow-800">Diskon
+                                            {{ (int) $voucher->persentase_diskon_222320 }}%</p>
+                                    </div>
+                                </div>
+                                <div
+                                    class="mt-4 text-center bg-white p-3 rounded-lg border-2 border-dashed border-gray-300">
+                                    <p class="text-sm text-gray-500 mb-1">Gunakan kode:</p>
+                                    <p class="font-mono text-xl font-bold text-gray-800 tracking-widest">
+                                        {{ $voucher->kode_voucher_222320 }}</p>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-3 text-center">
+                                    Berlaku hingga:
+                                    {{ \Carbon\Carbon::parse($voucher->tanggal_kadaluarsa_222320)->format('d F Y') }}
+                                </p>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
             @if ($bookings->isEmpty())
                 <div class="bg-white rounded-xl shadow-lg p-12 text-center">
                     <div class="w-24 h-24 mx-auto mb-6 bg-yellow-100 rounded-full flex items-center justify-center">
@@ -71,12 +78,10 @@
                     </a>
                 </div>
             @else
-                <!-- Booking Cards -->
                 <div class="space-y-8">
                     @foreach ($bookings as $booking)
                         <div
                             class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
-                            <!-- Header Card -->
                             <div class="bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white">
                                 <div class="flex justify-between items-start">
                                     <div>
@@ -90,11 +95,11 @@
                                         </div>
                                         <span
                                             class="inline-block px-3 py-1 rounded-full text-sm font-medium bg-white bg-opacity-20 backdrop-blur-sm mt-2
-                                            @if ($booking->status_222320 === 'menunggu_konfirmasi') text-black
-                                            @elseif($booking->status_222320 === 'dikonfirmasi') text-black
-                                            @elseif($booking->status_222320 === 'checkin') text-black
-                                            @elseif($booking->status_222320 === 'checkout') text-black
-                                            @else text-black @endif">
+                                             @if ($booking->status_222320 === 'menunggu_konfirmasi') text-black
+                                             @elseif($booking->status_222320 === 'dikonfirmasi') text-black
+                                             @elseif($booking->status_222320 === 'checkin') text-black
+                                             @elseif($booking->status_222320 === 'checkout') text-black
+                                             @else text-black @endif">
                                             {{ ucfirst(str_replace('_', ' ', $booking->status_222320)) }}
                                         </span>
                                     </div>
@@ -103,11 +108,9 @@
 
                             <div class="p-6">
                                 <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                                    <!-- Room Image & Details -->
                                     <div class="xl:col-span-1">
                                         @if ($booking->room)
                                             <div class="bg-gray-50 rounded-lg p-4 mb-4">
-                                                <!-- Room Image -->
                                                 <div class="mb-4">
                                                     @if ($booking->room->foto_kamar_222320)
                                                         <img src="{{ asset('storage/' . $booking->room->foto_kamar_222320) }}"
@@ -149,7 +152,6 @@
                                         @endif
                                     </div>
 
-                                    <!-- Booking Details -->
                                     <div class="xl:col-span-1">
                                         <div class="bg-blue-50 rounded-lg p-4">
                                             <h4 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
@@ -216,7 +218,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- Payment Status -->
                                     <div class="xl:col-span-1">
                                         @if ($booking->pembayaran)
                                             <div class="bg-green-50 rounded-lg p-4 h-full">
@@ -276,7 +277,6 @@
                                                 </div>
                                             </div>
                                         @else
-                                            <!-- Payment Required -->
                                             <div x-data="{ openModal: false }" class="bg-red-50 rounded-lg p-4 h-full">
                                                 <div class="text-center">
                                                     <div
@@ -307,20 +307,17 @@
                                                     </button>
                                                 </div>
 
-                                                <!-- Payment Modal -->
                                                 <div x-show="openModal"
                                                     class="fixed inset-0 flex items-center justify-center z-50"
                                                     style="background-color: rgba(0, 0, 0, 0.3);" x-cloak>
                                                     <div @click.outside="openModal = false"
                                                         class="bg-white rounded-lg shadow-xl w-full max-w-xs mx-4 overflow-hidden">
-                                                        <!-- Modal Header -->
                                                         <div
                                                             class="bg-gradient-to-r from-blue-600 to-purple-600 p-3 text-white">
                                                             <h2 class="text-sm font-bold">Upload Bukti Pembayaran QRIS</h2>
                                                         </div>
 
                                                         <div class="p-3">
-                                                            <!-- Booking Summary -->
                                                             <div class="bg-gray-50 p-2 rounded-md mb-3">
                                                                 <div class="flex justify-between items-center mb-1">
                                                                     <span class="text-xs text-gray-600">ID Booking:</span>
@@ -335,7 +332,6 @@
                                                                 </div>
                                                             </div>
 
-                                                            <!-- QRIS Code -->
                                                             <div class="text-center mb-3">
                                                                 <p class="text-xs text-gray-600 mb-2">Scan QR Code:</p>
                                                                 <div
@@ -345,7 +341,6 @@
                                                                 </div>
                                                             </div>
 
-                                                            <!-- Upload Form -->
                                                             <form action="{{ route('pembayaran.store') }}" method="POST"
                                                                 enctype="multipart/form-data">
                                                                 @csrf
@@ -407,7 +402,6 @@
         </div>
     </div>
 
-    <!-- Image Modal -->
     <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden items-center justify-center">
         <div class="max-w-4xl max-h-screen p-4">
             <div class="relative">
