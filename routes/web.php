@@ -28,10 +28,10 @@ Route::get('/', function () {
 })->name('user.home');
 Route::get('/about', function () {
     return view('pages.users.about_us');
-})->name('user.home');
+})->name('about');
 Route::get('/contact-us', function () {
     return view('pages.users.kontak');
-})->name('user.home');
+})->name('contact');
 
 Route::get('/rooms', [App\Http\Controllers\UserRoomController::class, 'index'])->name('user.rooms.index');
 

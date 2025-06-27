@@ -27,7 +27,7 @@
             </div>
             <div>
                 <h2 class="font-semibold text-lg mb-2">Role</h2>
-                <p>{{ ucfirst($user->role_222320) }}</p>
+                <p>{{ $user->role_222320 == 'user' ? 'Customer' : ucfirst($user->role_222320) }}</p>
             </div>
         </div>
 

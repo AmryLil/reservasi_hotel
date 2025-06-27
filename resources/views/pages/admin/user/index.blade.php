@@ -66,7 +66,9 @@
                             <td class="py-4 px-6 font-semibold">{{ $user->nama_222320 }}</td>
                             <td class="py-4 px-6 font-semibold">{{ $user->email_222320 }}</td>
                             <td class="py-4 px-6 font-semibold">{{ ucfirst($user->gender_222320) }}</td>
-                            <td class="py-4 px-6 font-semibold">{{ ucfirst($user->role_222320) }}</td>
+                            <td class="py-4 px-6 font-semibold">
+                                {{ $user->role_222320 == 'user' ? 'Customer' : ucfirst($user->role_222320) }}
+                            </td>
                             <td class="py-4 px-6 text-center">
                                 <div class="flex justify-center space-x-2">
                                     <a href="{{ route('admin.users.show', $user->email_222320) }}"

@@ -357,7 +357,7 @@ class ReservasiController extends Controller
                 $q
                     ->where('id_booking_222320', 'like', "%{$search}%")
                     ->orWhereHas('user', function ($userQuery) use ($search) {
-                        $userQuery->where('name', 'like', "%{$search}%");
+                        $userQuery->where('nama_222320', 'like', "%{$search}%");
                     });
             });
         }

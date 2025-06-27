@@ -80,7 +80,7 @@
                                     class="w-full border bg-blue-50 border-blue-200 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none text-sm">
                                     <option value="" disabled selected>Pilih role Anda</option>
                                     <option value="admin">Admin</option>
-                                    <option value="user">User</option>
+                                    <option value="user">Customer</option>
                                 </select>
                             </div>
                         </div>

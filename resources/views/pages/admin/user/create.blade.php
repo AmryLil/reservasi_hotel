@@ -55,7 +55,7 @@
                         required>
                         <option value="">Pilih Role</option>
                         <option value="admin" {{ old('role_222320') == 'admin' ? 'selected' : '' }}>Admin</option>
-                        <option value="user" {{ old('role_222320') == 'user' ? 'selected' : '' }}>User</option>
+                        <option value="user" {{ old('role_222320') == 'user' ? 'selected' : '' }}>Customer</option>
                     </select>
                 </div>
                 <div>
