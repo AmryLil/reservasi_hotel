@@ -31,18 +31,18 @@
                     class="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform {{ Request::is('gallery.index') ? 'scale-x-100' : '' }}"></span>
             </a>
 
-            <a href="#"
+            <a href="{{ route('about') }}"
                 class="relative group px-4 py-2 {{ Request::is('about') ? 'text-blue-600 font-medium' : 'text-gray-700' }}">
                 Tentang Kami
                 <span
                     class="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform {{ Request::is('about') ? 'scale-x-100' : '' }}"></span>
             </a>
 
-            <a href="#"
-                class="relative group px-4 py-2 {{ Request::is('contact-us') ? 'text-blue-600 font-medium' : 'text-gray-700' }}">
+            <a href="{{ route('contact') }}"
+                class="relative group px-4 py-2 {{ Request::is('contact') ? 'text-blue-600 font-medium' : 'text-gray-700' }}">
                 Kontak
                 <span
-                    class="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform {{ Request::is('contact-us') ? 'scale-x-100' : '' }}"></span>
+                    class="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform {{ Request::is('contact') ? 'scale-x-100' : '' }}"></span>
             </a>
         </div>
     </nav>

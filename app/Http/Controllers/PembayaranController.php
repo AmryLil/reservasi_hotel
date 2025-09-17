@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Booking;
 use App\Models\Pembayaran;
+use App\Models\Voucher;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -22,7 +24,42 @@ class PembayaranController extends Controller
             ->orderBy('tanggal_booking_222320', 'desc')
             ->get();
 
-        return view('pages.users.reservasi', compact('bookings'));
+        $vouchers = Voucher::where('id_user_222320', $userId)
+            ->where('status_222320', 'tersedia')
+            ->where('tanggal_kadaluarsa_222320', '>=', now())  // Cek yang belum kadaluarsa
+            ->get();
+
+        return view('pages.users.reservasi', compact('bookings', 'vouchers'));
+    }
+
+    public function validateAjax(Request $request)
+    {
+        $request->validate(['kode_voucher' => 'required|string']);
+
+        $kodeVoucher = $request->input('kode_voucher');
+        $user        = Auth::user();
+
+        $voucher = Voucher::where('kode_voucher_222320', $kodeVoucher)->first();
+
+        if (!$voucher) {
+            return response()->json(['valid' => false, 'message' => 'Kode voucher tidak ditemukan.'], 404);
+        }
+        if ($voucher->id_user_222320 !== $user->email_222320) {
+            return response()->json(['valid' => false, 'message' => 'Voucher ini bukan milik Anda.'], 403);
+        }
+        if ($voucher->status_222320 === 'terpakai') {
+            return response()->json(['valid' => false, 'message' => 'Voucher sudah pernah digunakan.'], 422);
+        }
+        if (Carbon::now()->isAfter($voucher->tanggal_kadaluarsa_222320)) {
+            return response()->json(['valid' => false, 'message' => 'Voucher sudah kadaluarsa.'], 422);
+        }
+
+        // Jika semua validasi lolos
+        return response()->json([
+            'valid'             => true,
+            'message'           => 'Voucher berhasil diterapkan!',
+            'persentase_diskon' => $voucher->persentase_diskon_222320
+        ]);
     }
 
     // Menampilkan form pembayaran (khusus QRIS)
@@ -84,7 +121,7 @@ class PembayaranController extends Controller
         // Buat record pembayaran baru
         Pembayaran::create([
             'id_booking_222320'         => $request->id_booking_222320,
-            'jumlah_bayar_222320'       => $booking->total_harga_222320,  // Ambil dari booking
+            'jumlah_bayar_222320'       => $booking->total_harga_222320,
             'metode_pembayaran_222320'  => 'qris',
             'status_pembayaran_222320'  => 'pending',
             'tanggal_pembayaran_222320' => now(),
@@ -124,6 +161,28 @@ class PembayaranController extends Controller
             $pembayaran->booking->update([
                 'status_222320' => 'dikonfirmasi'
             ]);
+        }
+
+        if ($request->status_pembayaran_222320 === 'berhasil') {
+            $pembayaran->booking->update([
+                'status_booking_222320' => 'dikonfirmasi'
+            ]);
+            $user = $pembayaran->booking->user;
+
+            $jumlahBookingBerhasil = Booking::where('email_222320', $user->email_222320)
+                ->whereHas('pembayaran', function ($query) {
+                    $query->where('status_pembayaran_222320', 'berhasil');  // Sesuaikan dengan status Anda
+                })
+                ->count();
+
+            if ($jumlahBookingBerhasil > 0 && $jumlahBookingBerhasil % 3 == 0) {
+                Voucher::create([
+                    'id_user_222320'            => $user->email_222320,
+                    'tipe_222320'               => 'loyalitas',
+                    'persentase_diskon_222320'  => 10,  // Anda bisa atur diskonnya
+                    'tanggal_kadaluarsa_222320' => Carbon::now()->addMonth(),  // Berlaku 1 bulan
+                ]);
+            }
         }
 
         return redirect()

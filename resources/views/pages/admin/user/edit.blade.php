@@ -63,7 +63,8 @@
                         <option value="">Pilih Role</option>
                         <option value="admin" {{ old('role_222320', $user->role_222320) == 'admin' ? 'selected' : '' }}>
                             Admin</option>
-                        <option value="user" {{ old('role_222320', $user->role_222320) == 'user' ? 'selected' : '' }}>User
+                        <option value="user" {{ old('role_222320', $user->role_222320) == 'user' ? 'selected' : '' }}>
+                            Customer
                         </option>
                     </select>
                 </div>

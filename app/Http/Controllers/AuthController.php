@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Voucher;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -36,7 +38,7 @@ class AuthController extends Controller
       [
         'email'    => ['required', 'email'],
         'password' => 'required|min:8|max:10',
-        'role'     => 'required|in:admin,user',  // Validasi role
+        'role'     => 'required|in:admin,user',
       ],
       [
         'email.required'    => 'Email wajib diisi.',
@@ -49,22 +51,18 @@ class AuthController extends Controller
       ]
     );
 
-    // Menambahkan log percobaan login
     Log::info('Attempting login for:', [
       'email' => $credentials['email'],
       'role'  => $credentials['role']
     ]);
 
-    // Attempt login menggunakan kolom yang sudah disesuaikan dengan role
     if (Auth::attempt([
       'email_222320' => $credentials['email'],
       'password'     => $credentials['password'],
-      'role_222320'  => $credentials['role']  // Menambahkan role dalam autentikasi
+      'role_222320'  => $credentials['role']
     ])) {
-      // Regenerasi session ID untuk keamanan
       $request->session()->regenerate();
 
-      // Menyimpan data tambahan ke session, termasuk role
       session([
         'user_id'   => Auth::user()->email_222320,
         'user_role' => Auth::user()->role_222320,
@@ -72,14 +70,31 @@ class AuthController extends Controller
         'name'      => Auth::user()->nama_222320,
       ]);
 
-      // Log successful login
+      $user = Auth::user();
+
+      $voucherPenggunaBaru = Voucher::where('id_user_222320', $user->email_222320)
+        ->where('tipe_222320', 'pengguna_baru')
+        ->where('status_222320', 'tersedia')
+        ->first();
+
+      Log::debug('Hasil pencarian voucher untuk pengguna baru:', [
+        'user_email'        => $user->email_222320,
+        'voucher_ditemukan' => $voucherPenggunaBaru ? $voucherPenggunaBaru->toArray() : null
+      ]);
+
+      if ($voucherPenggunaBaru) {
+        $request->session()->put('show_new_user_voucher', [
+          'kode'   => $voucherPenggunaBaru->kode_voucher_222320,
+          'diskon' => $voucherPenggunaBaru->persentase_diskon_222320
+        ]);
+      }
+
       Log::info('Login successful for user:', [
         'user_id' => Auth::user()->email_222320,
         'email'   => Auth::user()->email_222320,
         'role'    => Auth::user()->role_222320
       ]);
 
-      // Redirect berdasarkan peran pengguna
       if (Auth::user()->role_222320 === 'admin') {
         return redirect()->intended(route('admin.rooms.index'))->with('success', 'Login berhasil sebagai Admin!');
       } else {
@@ -87,16 +102,12 @@ class AuthController extends Controller
       }
     }
 
-    // Log failed login attempt
-    Log::warning('Failed login attempt:', [
-      'email' => $credentials['email'],
-      'role'  => $credentials['role'],
-      'ip'    => $request->ip()
+    // Gagal login - tanpa menggunakan flash error (withErrors)
+    return redirect()->back()->with([
+      'login_error' => 'Email, password, atau role yang Anda masukkan salah.',
+      'old_email'   => $credentials['email'],
+      'old_role'    => $credentials['role']
     ]);
-
-    return back()->withErrors([
-      'email' => 'Email, password, atau role yang Anda masukkan salah.',
-    ])->withInput($request->only('email', 'role'));  // Mempertahankan input email dan role
   }
 
   /**
@@ -107,6 +118,23 @@ class AuthController extends Controller
   public function showRegistrationForm()
   {
     return view('pages.auth.signup');
+  }
+
+  protected function authenticated(Request $request, $user)
+  {
+    // Cek apakah user punya voucher 'pengguna_baru' yang masih tersedia
+    $voucherPenggunaBaru = \App\Models\Voucher::where('id_user_222320', $user->email_222320)
+      ->where('tipe_222320', 'pengguna_baru')
+      ->where('status_222320', 'tersedia')
+      ->first();
+
+    // Jika voucher ada, kirim flash session untuk memicu modal
+    if ($voucherPenggunaBaru) {
+      $request->session()->flash('show_new_user_voucher', [
+        'kode'   => $voucherPenggunaBaru->kode_voucher_222320,
+        'diskon' => $voucherPenggunaBaru->persentase_diskon_222320
+      ]);
+    }
   }
 
   /**
@@ -136,6 +164,14 @@ class AuthController extends Controller
       'role_222320'     => 'user',
     ]);
 
+    if ($user) {
+      Voucher::create([
+        'id_user_222320'            => $user->email_222320,
+        'tipe_222320'               => 'pengguna_baru',
+        'persentase_diskon_222320'  => 15,  // Ganti sesuai keinginan
+        'tanggal_kadaluarsa_222320' => Carbon::now()->addDays(14),  // Berlaku 14 hari
+      ]);
+    }
     // Auth::login($user);
 
     return redirect()->route('login');

@@ -3,6 +3,7 @@
 @section('content')
     <div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
         <div class="max-w-7xl mx-auto">
+            {{-- Bagian Header Halaman --}}
             <div class="mb-8">
                 <div class="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
                     <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-8 py-6">
@@ -18,6 +19,7 @@
                 </div>
             </div>
 
+            {{-- Bagian Form Filter --}}
             <div class="bg-white rounded-2xl shadow-lg border border-slate-200 mb-8">
                 <div class="p-8">
                     <h2 class="text-xl font-semibold text-slate-800 mb-6 flex items-center gap-2">
@@ -119,7 +121,8 @@
                                         Filter
                                     </button>
                                     <button type="button" onclick="resetForm()"
-                                        class="p-3 bg-slate-500 hover:bg-slate-600 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-200">
+                                        class="p-3 bg-slate-500 hover:bg-slate-600 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-200"
+                                        title="Reset Filter">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
@@ -133,6 +136,7 @@
                 </div>
             </div>
 
+            {{-- Bagian Hasil Laporan --}}
             @if ($showResults)
                 <div class="bg-white rounded-2xl shadow-lg border border-slate-200">
                     <div class="p-6 border-b border-slate-200">
@@ -177,44 +181,92 @@
                                 </p>
                             </div>
 
-                            @if ($bookings->isNotEmpty())
-                                <form action="{{ route('admin.reservasi.laporan') }}" method="GET" class="inline">
-                                    <input type="hidden" name="filter_type" value="{{ request('filter_type') }}">
-                                    <input type="hidden" name="tanggal" value="{{ request('tanggal') }}">
-                                    <input type="hidden" name="minggu" value="{{ request('minggu') }}">
-                                    <input type="hidden" name="bulan" value="{{ request('bulan') }}">
-                                    <input type="hidden" name="tahun_bulan" value="{{ request('tahun_bulan') }}">
-                                    <input type="hidden" name="tahun" value="{{ request('tahun') }}">
-                                    <input type="hidden" name="tanggal_mulai" value="{{ request('tanggal_mulai') }}">
-                                    <input type="hidden" name="tanggal_akhir" value="{{ request('tanggal_akhir') }}">
-                                    <input type="hidden" name="format" value="pdf">
-                                    <button type="submit"
-                                        class="bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2">
+                            {{-- [PERUBAHAN] Tombol Ekspor yang Lebih Baik --}}
+                            <div class="flex items-center gap-3">
+                                @if ($bookings->isNotEmpty())
+                                    <a href="{{ route('admin.reservasi.laporan', array_merge(request()->query(), ['format' => 'pdf'])) }}"
+                                        target="_blank"
+                                        class="bg-red-100 hover:bg-red-200 text-red-700 font-semibold px-4 py-2 rounded-lg shadow-sm border border-red-200 hover:shadow-md transition-all duration-200 flex items-center gap-2 text-sm">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                                         </svg>
-                                        Export PDF
-                                    </button>
-                                </form>
-                            @endif
+                                        Export Hasil Filter (PDF)
+                                    </a>
+                                @endif
+                                <a href="{{ route('admin.reservasi.laporan', ['format' => 'pdf']) }}" target="_blank"
+                                    class="bg-gray-700 hover:bg-gray-800 text-white font-semibold px-4 py-2 rounded-lg shadow-sm border border-gray-800 hover:shadow-md transition-all duration-200 flex items-center gap-2 text-sm">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                        </path>
+                                    </svg>
+                                    Export Semua Data (PDF)
+                                </a>
+                            </div>
                         </div>
                     </div>
 
                     <div class="p-6">
                         @if ($bookings->isNotEmpty())
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 mb-6">
+                            {{-- [PERUBAHAN] Grid Statistik yang Diperkaya --}}
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-5 mb-6">
+                                <div
+                                    class="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-xl border border-green-200">
+                                    <div class="flex items-center gap-3">
+                                        <div class="p-2 bg-green-600 rounded-lg"><svg class="w-5 h-5 text-white"
+                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                                            </svg></div>
+                                        <div>
+                                            <p class="text-green-600 text-sm font-medium">Total Pendapatan</p>
+                                            <p class="text-xl font-bold text-green-800">Rp
+                                                {{ number_format($bookings->where('status_222320', '!=', 'dibatalkan')->sum('total_harga_222320'), 0, ',', '.') }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div
+                                    class="bg-gradient-to-br from-cyan-50 to-cyan-100 p-4 rounded-xl border border-cyan-200">
+                                    <div class="flex items-center gap-3">
+                                        <div class="p-2 bg-cyan-600 rounded-lg"><svg class="w-5 h-5 text-white"
+                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg></div>
+                                        <div>
+                                            <p class="text-cyan-600 text-sm font-medium">Reservasi Sukses</p>
+                                            <p class="text-xl font-bold text-cyan-800">{{ $successfulBookingsCount ?? 0 }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div
+                                    class="bg-gradient-to-br from-orange-50 to-orange-100 p-4 rounded-xl border border-orange-200">
+                                    <div class="flex items-center gap-3">
+                                        <div class="p-2 bg-orange-600 rounded-lg"><svg class="w-5 h-5 text-white"
+                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z">
+                                                </path>
+                                            </svg></div>
+                                        <div>
+                                            <p class="text-orange-600 text-sm font-medium">Reservasi Dibatalkan</p>
+                                            <p class="text-xl font-bold text-orange-800">
+                                                {{ $cancelledBookingsCount ?? 0 }}</p>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div
                                     class="bg-gradient-to-br from-indigo-50 to-indigo-100 p-4 rounded-xl border border-indigo-200">
                                     <div class="flex items-center gap-3">
-                                        <div class="p-2 bg-indigo-600 rounded-lg">
-                                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
+                                        <div class="p-2 bg-indigo-600 rounded-lg"><svg class="w-5 h-5 text-white"
+                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M5 5a2 2 0 012-2h10a2 2 0 012 2v1h2a1 1 0 011 1v3a1 1 0 01-1 1h-2v1a2 2 0 01-2 2H7a2 2 0 01-2-2v-1H3a1 1 0 01-1-1V7a1 1 0 011-1h2V5z">
                                                 </path>
-                                            </svg>
-                                        </div>
+                                            </svg></div>
                                         <div>
                                             <p class="text-indigo-600 text-sm font-medium">Kamar Terlaris</p>
                                             <p class="text-xl font-bold text-indigo-800">
@@ -225,14 +277,12 @@
                                 <div
                                     class="bg-gradient-to-br from-rose-50 to-rose-100 p-4 rounded-xl border border-rose-200">
                                     <div class="flex items-center gap-3">
-                                        <div class="p-2 bg-rose-600 rounded-lg">
-                                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
+                                        <div class="p-2 bg-rose-600 rounded-lg"><svg class="w-5 h-5 text-white"
+                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
                                                 </path>
-                                            </svg>
-                                        </div>
+                                            </svg></div>
                                         <div>
                                             <p class="text-rose-600 text-sm font-medium">Tipe Kamar Terlaris</p>
                                             <p class="text-xl font-bold text-rose-800">
@@ -241,20 +291,18 @@
                                     </div>
                                 </div>
                                 <div
-                                    class="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-xl border border-green-200">
+                                    class="bg-gradient-to-br from-teal-50 to-teal-100 p-4 rounded-xl border border-teal-200">
                                     <div class="flex items-center gap-3">
-                                        <div class="p-2 bg-green-600 rounded-lg">
-                                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
+                                        <div class="p-2 bg-teal-600 rounded-lg"><svg class="w-5 h-5 text-white"
+                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                                            </svg>
-                                        </div>
+                                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z">
+                                                </path>
+                                            </svg></div>
                                         <div>
-                                            <p class="text-green-600 text-sm font-medium">Total Pendapatan</p>
-                                            <p class="text-xl font-bold text-green-800">Rp
-                                                {{ number_format($bookings->whereNotIn('status_222320', ['dibatalkan'])->sum('total_harga_222320'), 0, ',', '.') }}
-                                            </p>
+                                            <p class="text-teal-600 text-sm font-medium">Pelanggan Teratas</p>
+                                            <p class="text-xl font-bold text-teal-800">
+                                                {{ $topCustomer->nama_222320 ?? 'N/A' }}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -263,7 +311,7 @@
                             <div class="overflow-hidden rounded-xl border border-slate-200">
                                 <div class="overflow-x-auto">
                                     <table class="min-w-full divide-y divide-slate-200">
-                                        <thead class="bg-slate-50">
+                                        <thead class="bg-slate-100">
                                             <tr>
                                                 <th
                                                     class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
@@ -310,8 +358,8 @@
                                                     </td>
                                                     <td class="px-6 py-4 whitespace-nowrap">
                                                         <span
-                                                            class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border bg-{{ $booking->status_badge }}-100 text-{{ $booking->status_badge }}-800 border-{{ $booking->status_badge }}-200">
-                                                            {{ $booking->status_label }}
+                                                            class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border bg-{{ $booking->status_badge ?? 'gray' }}-100 text-{{ $booking->status_badge ?? 'gray' }}-800 border-{{ $booking->status_badge ?? 'gray' }}-200">
+                                                            {{ $booking->status_label ?? $booking->status_222320 }}
                                                         </span>
                                                     </td>
                                                     <td
@@ -351,7 +399,6 @@
                     </p>
                 </div>
             @endif
-
         </div>
     </div>
 
@@ -361,7 +408,6 @@
         }
 
         function toggleFilterInputs() {
-            // Sembunyikan semua grup input dinamis
             document.querySelectorAll('.filter-input').forEach(div => {
                 div.style.display = 'none';
             });
@@ -370,25 +416,21 @@
             if (selectedFilter) {
                 const selectedDiv = document.getElementById(selectedFilter + '-input');
                 if (selectedDiv) {
-                    // Gunakan grid untuk container yang memiliki lebih dari 1 anak, selain itu block
                     selectedDiv.style.display = (selectedFilter === 'bulanan' || selectedFilter === 'custom') ? 'grid' :
                         'block';
                 }
             }
         }
 
-        // Panggil saat halaman dimuat untuk mengatur state awal
         document.addEventListener('DOMContentLoaded', function() {
             toggleFilterInputs();
 
             const startDateInput = document.getElementById('tanggal_mulai');
             const endDateInput = document.getElementById('tanggal_akhir');
 
-            if (startDateInput) {
+            if (startDateInput && endDateInput) {
                 startDateInput.addEventListener('change', function() {
-                    if (endDateInput) {
-                        endDateInput.min = this.value;
-                    }
+                    endDateInput.min = this.value;
                 });
             }
         });
